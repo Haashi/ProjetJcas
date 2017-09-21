@@ -1,0 +1,389 @@
+// ---------------------------------------------------------------------------
+// syntaxe.cup
+// Fichier cup qui définit l'analyseur syntaxique
+// ---------------------------------------------------------------------------
+
+package fr.esisar.compilation.syntaxe;
+
+import java_cup.runtime.*;
+import fr.esisar.compilation.global.src.*;
+import java.io.InputStream;
+
+/* Code pour l'analyseur syntaxique. */
+parser code {:
+
+   /**
+    * Réalise l'analyse syntaxique du fichier passé en argument (ou de 
+    * l'entrée standard si args est un tableau vide) et retourne 
+    * l'abstrait correspondant.
+    * Lève l'exception ErreurLexicale en cas d'erreur lexicale, et 
+    * ErreurSyntaxe en cas d'erreur de syntaxe.
+    */
+   public static Arbre analyseSyntaxique(String[] args) 
+         throws Exception, ErreurLexicale, ErreurSyntaxe {
+
+      // On récupère le fichier à analyser
+      InputStream fichierCas = ArgsFichier.ouvrir(args);
+
+      // Création de l'analyseur lexical
+      Lexical analyseurLex = new Lexical(fichierCas);
+
+      // Création de l'analyseur syntaxique
+      parser analyseurSynt = new parser(analyseurLex);
+
+      // Appel de l'analyseur syntaxique et récupération de l'arbre résultat
+      Object result = analyseurSynt.parse().value;
+      Arbre arbre = (Arbre) result;
+      
+      // On retourne l'arbre abstrait construit
+      return arbre;
+   }
+
+   /**
+    * Affiche un message d'erreur en cas d'erreur de syntaxe.
+    */
+   public void syntax_error(Symbol cur_token) {
+      // Affichage du message d'erreur, avec le numéro de ligne 
+      System.out.println("Erreur de syntaxe ... ligne " + numLigne()) ;
+   }
+
+   /**
+    * Méthode appelée en cas d'erreur de syntaxe.
+    */
+   public void unrecovered_syntax_error(Symbol cur_token)
+         throws ErreurSyntaxe {
+      throw new ErreurSyntaxe();
+   }
+
+   /**
+    * Retourne le numéro de ligne courant.
+    */
+   public int numLigne() {
+      // On récupère l'analyseur lexical
+      Lexical anaLex = (Lexical) getScanner();
+      return anaLex.numLigne();
+   }
+:};
+
+/* Terminaux (tokens retournés par l'analyseur lexical. */
+terminal String IDF;          // Identificateur
+terminal Integer CONST_ENT;   // Constante entière
+terminal Float CONST_REEL;    // Constante réelle
+terminal String CONST_CHAINE; // Constante chaîne
+
+/* Mots réservés */
+terminal   AND,         ARRAY,       BEGIN;
+terminal   DIV,         DO,          DOWNTO;
+terminal   ELSE,        END,         FOR;
+terminal   IF,          MOD,         NEW_LINE;
+terminal   NOT,         NULL,        OF;
+terminal   OR,          PROGRAM,     READ;
+terminal   THEN,        TO,          WHILE;
+terminal   WRITE;
+
+/* Opérateurs */
+terminal INF, SUP, EGAL, DIFF, // "<", ">", "=", "/="
+         INF_EGAL, SUP_EGAL,   // "<=", ">="
+         PLUS, MOINS,          // "+", "-"
+         MULT, DIV_REEL;       // "*", "/"
+
+/* Autres terminaux */
+terminal PAR_OUVR, PAR_FERM; // "(", ")" 
+terminal DOUBLE_POINT;       // ".."
+terminal DEUX_POINTS;        // ":"
+terminal VIRGULE;            // ","
+terminal POINT_VIRGULE;      // ";"
+terminal CROCH_OUVR;         // "["
+terminal CROCH_FERM;         // "]"
+terminal AFFECT;             // ":="
+terminal POINT;              // "."
+
+/* Définition des non terminaux de la grammaire */
+non terminal Arbre program;
+non terminal Arbre liste_decl;
+non terminal Arbre liste_inst;
+non terminal Arbre inst;
+non terminal Arbre decl;
+non terminal Arbre liste_idf;
+non terminal Arbre type;
+non terminal Arbre idf;
+non terminal Arbre type_intervalle;
+non terminal Arbre constante;
+non terminal Arbre const;
+non terminal Arbre pas;
+non terminal Arbre liste_exp;
+non terminal Arbre exp;
+non terminal Arbre facteur;
+non terminal Arbre place;
+
+/*
+   On définit les priorités des opérateurs
+   Les priorités vont dans l'ordre croissant
+   On déclare egalement l'associativité des opérateurs
+   (left, right, ou nonassoc)
+*/
+
+precedence nonassoc INF, SUP, EGAL, DIFF, INF_EGAL, SUP_EGAL;
+precedence left PLUS, MOINS, OR;
+precedence left MULT, DIV_REEL, DIV, MOD, AND;
+precedence nonassoc NOT;
+
+program ::= PROGRAM:p liste_decl:a1 BEGIN liste_inst:a2 END POINT
+   {:
+      RESULT = Arbre.creation2(Noeud.Programme, a1, a2, pleft);
+      // pleft : Numéro de ligne du mot réservé "program".
+   :}
+   ;
+liste_decl ::= liste_decl:a1 decl:a2 POINT_VIRGULE
+   {:
+      RESULT = Arbre.creation2(Noeud.ListeDecl, a1, a2, a2.getNumLigne());
+   :}
+   |  // epsilon
+   {:
+      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
+   :}
+   ;
+
+// ---------------------------------------------
+// ECRIRE LES ACTIONS POUR LES REGLES SUIVANTES
+// ---------------------------------------------
+
+
+
+decl ::= liste_idf DEUX_POINTS type
+   {:
+      
+   :}
+   ;
+liste_idf ::= liste_idf VIRGULE idf
+   {: 
+      
+   :}
+   |  idf
+   {:
+      
+   :}
+   ;
+
+type ::= idf
+   {:
+      
+   :}
+   |  type_intervalle
+   {:
+      
+   :}
+   |  ARRAY CROCH_OUVR type_intervalle CROCH_FERM OF type
+   {:
+      
+   :}
+   ;
+
+type_intervalle ::= constante DOUBLE_POINT constante
+   {:
+      
+   :}
+   ;
+
+constante ::= PLUS const
+   {:
+      
+   :}
+   |  MOINS const
+   {: 
+      
+   :}
+   |  const
+   {:
+      
+   :}
+   ;
+
+const ::= CONST_ENT
+   {:
+      
+   :}
+   |  idf
+   {:
+      
+   :}
+   ;
+idf ::= IDF
+   {:
+      
+   :}
+   ;
+
+liste_inst ::= liste_inst inst POINT_VIRGULE
+   {: 
+      
+   :}
+   |  inst POINT_VIRGULE
+   {:
+      
+   :}
+   ;
+
+inst ::= NULL
+   {:
+
+   :}
+   |  place AFFECT exp
+   {:
+      
+   :}
+   |  FOR pas DO liste_inst END
+   {:
+      
+   :}
+   |  WHILE exp DO liste_inst END
+   {:
+      
+   :}
+   |  IF exp THEN liste_inst END
+   {:
+      
+   :}
+   |  IF exp THEN liste_inst ELSE liste_inst END
+   {:
+      
+   :}
+   |  WRITE PAR_OUVR liste_exp PAR_FERM
+   {:
+      
+   :}
+   |  READ PAR_OUVR place PAR_FERM
+   {:
+      
+   :}
+   |  NEW_LINE
+   {:
+      
+   :}
+   ;
+
+pas ::= idf AFFECT exp TO exp
+   {:
+      
+   :}
+   |  idf AFFECT exp DOWNTO exp
+   {: 
+      
+   :}
+   ;
+
+liste_exp ::= liste_exp VIRGULE exp
+   {:
+      
+   :}
+   |  exp
+   {:
+      
+   :}
+   ;
+   
+exp ::= facteur
+   {:
+      
+   :}
+   |  exp AND exp
+   {:
+      
+   :}
+   |  exp OR exp
+   {:
+      
+   :}
+   |  exp EGAL exp
+   {:
+      
+   :}
+   |  exp INF_EGAL exp
+   {:
+      
+   :}
+   |  exp SUP_EGAL exp
+   {:
+      
+   :}
+   |  exp DIFF exp
+   {:
+      
+   :}
+   |  exp INF exp
+   {:
+      
+   :}
+   |  exp SUP exp
+   {:
+      
+   :}
+   |  exp PLUS exp
+   {:
+      
+   :}
+   |  exp MOINS exp
+   {:
+      
+   :}
+   |  exp MULT exp
+   {:
+      
+   :}
+   |  exp DIV_REEL exp
+   {:
+      
+   :}
+   |  exp MOD exp
+   {:
+      
+   :}
+   |  exp DIV exp
+   {:
+      
+   :}
+   |  PLUS facteur
+   {: 
+      
+   :}
+   |  MOINS facteur
+   {: 
+      
+   :}
+   |  NOT facteur
+   {: 
+      
+   :}
+   ;
+
+facteur ::= CONST_ENT
+   {:
+      
+   :}
+   |  CONST_REEL
+   {: 
+      
+   :}
+   |  CONST_CHAINE
+   {:
+      
+   :}
+   |  place
+   {:
+      
+   :}
+   |  PAR_OUVR exp PAR_FERM
+   {:
+      
+   :}
+   ;
+
+place ::= idf
+   {:
+      
+   :}
+   |  place CROCH_OUVR exp CROCH_FERM
+   {:
+      
+   :}
+   ;
