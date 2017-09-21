@@ -27,7 +27,7 @@ import java.util.Hashtable;
 // On crée un analyseur lexical compatible avec Cup.
 %cup
 
-// Active le comptage des lignes 
+// Active le comptage des lignes
 %line
 
 // Declaration des exceptions qui peuvent etre levees par l'analyseur lexical
@@ -37,11 +37,11 @@ import java.util.Hashtable;
 
 %{
    /**
-    * Le dictionnaire associe à chaque mot réservé le code du lexème 
+    * Le dictionnaire associe à chaque mot réservé le code du lexème
     * correspondant.
     */
-   private final Hashtable<String,Integer> 
-      dictionnaire = initialiserDictionnaire(); 
+   private final Hashtable<String,Integer>
+      dictionnaire = initialiserDictionnaire();
 
    /**
     * Initialisation du dictionnaire.
@@ -93,7 +93,7 @@ import java.util.Hashtable;
     */
    static String toString(int code_lexeme) {
       switch (code_lexeme) {
-         case sym.IDF: 
+         case sym.IDF:
             return "IDF";
          case sym.CONST_ENT:
             return "CONST_ENT";
@@ -228,12 +228,12 @@ import java.util.Hashtable;
 
 CHIFFRE        = [0-9]
 LETTRE         = [a-zA-Z]
-SIGNE          = {'+', '-', ''}.
-IDF	       = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
-NUM  	       = CHIFFRE CHIFFRE*
+//SIGNE          = {'+', '-', ''}
+IDF	           = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
+NUM  	         = CHIFFRE CHIFFRE*
 EXP            = 'E' SIGNE NUM + 'e' SIGNE NUM
 DEC            = NUM '.' NUM
-INT  	       = NUM 
+INT  	         = NUM
 REEL           = DEC + DEC EXP
 CHAINE_CAR     = "" + "!" + [\040-\176]
 CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
@@ -265,7 +265,7 @@ COMM           = "--"{COMM_CAR}*
 
 "="		       { return symbol(sym.EGAL);}
 
-"*"		       { return symbol(sym.MULT);} 
+"*"		       { return symbol(sym.MULT);}
 
 "-"		       { return symbol(sym.MOINS);}
 
