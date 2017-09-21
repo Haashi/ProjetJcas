@@ -228,8 +228,20 @@ import java.util.Hashtable;
 
 CHIFFRE        = [0-9]
 LETTRE         = [a-zA-Z]
-IDF = {LETTRE}({LETTRE}|{CHIFFRE}|"_")* 
-NUM = CHIFFRE CHIFFRE*
+SIGNE          = {'+', '-', ''}.
+IDF	       = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
+NUM  	       = CHIFFRE CHIFFRE*
+EXP            = 'E' SIGNE NUM + 'e' SIGNE NUM
+DEC            = NUM '.' NUM
+INT  	       = NUM 
+REEL           = DEC + DEC EXP
+CHAINE_CAR     = "" + "!" + [\040-\176]
+CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
+COMM_CAR       = \t|[\040-\176]
+COMM           = "--"{COMM_CAR}*
+
+
+
 
 // ------------
 // A COMPLETER
@@ -246,6 +258,44 @@ NUM = CHIFFRE CHIFFRE*
 \n                     { }
 
 "+"                    { return symbol(sym.PLUS); }
+
+"<"		       { return symbol(sym.INF);}
+
+">"		       { return symbol(sym.SUP);}
+
+"="		       { return symbol(sym.EGAL);}
+
+"*"		       { return symbol(sym.MULT);} 
+
+"-"		       { return symbol(sym.MOINS);}
+
+"/"		       { return symbol(sym.DIV_REEL);}
+
+"["		       { return symbol(sym.CROCH_OUVR);}
+
+"]"		       { return symbol(sym.CROCH_FERM);}
+
+","		       { return symbol(sym.VIRGULE);}
+
+":"		       { return symbol(sym.DEUX_POINTS);}
+
+"("		       { return symbol(sym.PAR_OUVR);}
+
+")"		       { return symbol(sym.PAR_FER);}
+
+";"		       { return symbol(sym.POINT_VIRGULE);}
+
+".."		       { return symbol(sym.DOUBLE_POINT);}
+
+":="		       { return symbol(sym.AFFECT);}
+
+"/="		       { return symbol(sym.DIFF);}
+
+">="		       { return symbol(sym.SUP_EGAL);}
+
+"<="		       { return symbol(sym.INF_EGAL);}
+
+.                      { return symbol(sym.POINT);}
 
 "(?i)IF"		{ return symbol(sym.IF);}
 
@@ -290,13 +340,6 @@ NUM = CHIFFRE CHIFFRE*
 "(?i)NEW_LINE"               { return symbol(sym.NEW_LINE);}
 
 "(?i)TO"               { return symbol(sym.TO);}
-
-
-
-.                      { System.out.println("Erreur Lexicale : '" +
-                            yytext() + "' non reconnu ... ligne " + 
-                            numLigne()) ;
-                         throw new ErreurLexicale() ; }
 
 // ------------
 // A COMPLETER
