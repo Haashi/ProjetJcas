@@ -27,7 +27,7 @@ import java.util.Hashtable;
 // On crée un analyseur lexical compatible avec Cup.
 %cup
 
-// Active le comptage des lignes 
+// Active le comptage des lignes
 %line
 
 // Declaration des exceptions qui peuvent etre levees par l'analyseur lexical
@@ -37,11 +37,11 @@ import java.util.Hashtable;
 
 %{
    /**
-    * Le dictionnaire associe à chaque mot réservé le code du lexème 
+    * Le dictionnaire associe à chaque mot réservé le code du lexème
     * correspondant.
     */
-   private final Hashtable<String,Integer> 
-      dictionnaire = initialiserDictionnaire(); 
+   private final Hashtable<String,Integer>
+      dictionnaire = initialiserDictionnaire();
 
    /**
     * Initialisation du dictionnaire.
@@ -93,7 +93,7 @@ import java.util.Hashtable;
     */
    static String toString(int code_lexeme) {
       switch (code_lexeme) {
-         case sym.IDF: 
+         case sym.IDF:
             return "IDF";
          case sym.CONST_ENT:
             return "CONST_ENT";
@@ -226,20 +226,21 @@ import java.util.Hashtable;
 // Définition des macros
 // -------------------------------------
 
-CHIFFRE        = [0-9]
-LETTRE         = [a-zA-Z]
-SIGNE          = {'+', '-', ''}.
-IDF	       = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
-NUM  	       = CHIFFRE CHIFFRE*
-EXP            = 'E' SIGNE NUM + 'e' SIGNE NUM
-DEC            = NUM '.' NUM
-INT  	       = NUM 
-REEL           = DEC + DEC EXP
-CHAINE_CAR     = "" + "!" + [\040-\176]
-CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
-COMM_CAR       = \t|[\040-\176]
-COMM           = "--"{COMM_CAR}*
 
+IDF                   = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
+INT                 = {NUM}
+REEL           = ({DEC}|{DEC}{EXP})
+EXP            = ("E"{SIGNE}{NUM} |"e"{SIGNE}{NUM})
+DEC            = {NUM}"."{NUM}
+CHIFFRE        = [0-9]
+NUM                 = {CHIFFRE}({CHIFFRE})*
+
+CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
+COMM           = --({COMM_CAR})*
+CHAINE_CAR     = ("" | "!" | [\040-\176])
+COMM_CAR       = ("\t" | [\040-\176])
+LETTRE         = [a-zA-Z]
+SIGNE                    = ("+" | "-" | "")
 
 
 
@@ -259,87 +260,75 @@ COMM           = "--"{COMM_CAR}*
 
 "+"                    { return symbol(sym.PLUS); }
 
-"<"		       { return symbol(sym.INF);}
+"<"                       { return symbol(sym.INF);}
 
-">"		       { return symbol(sym.SUP);}
+">"                       { return symbol(sym.SUP);}
 
-"="		       { return symbol(sym.EGAL);}
+"="                       { return symbol(sym.EGAL);}
 
-"*"		       { return symbol(sym.MULT);} 
+"*"                       { return symbol(sym.MULT);}
 
-"-"		       { return symbol(sym.MOINS);}
+"-"                       { return symbol(sym.MOINS);}
 
-"/"		       { return symbol(sym.DIV_REEL);}
+"/"                       { return symbol(sym.DIV_REEL);}
 
-"["		       { return symbol(sym.CROCH_OUVR);}
+"["                       { return symbol(sym.CROCH_OUVR);}
 
-"]"		       { return symbol(sym.CROCH_FERM);}
+"]"                       { return symbol(sym.CROCH_FERM);}
 
-","		       { return symbol(sym.VIRGULE);}
+","                       { return symbol(sym.VIRGULE);}
 
-":"		       { return symbol(sym.DEUX_POINTS);}
+":"                       { return symbol(sym.DEUX_POINTS);}
 
-"("		       { return symbol(sym.PAR_OUVR);}
+"("                       { return symbol(sym.PAR_OUVR);}
 
-")"		       { return symbol(sym.PAR_FER);}
+")"                       { return symbol(sym.PAR_FERM);}
 
-";"		       { return symbol(sym.POINT_VIRGULE);}
+";"                       { return symbol(sym.POINT_VIRGULE);}
 
-".."		       { return symbol(sym.DOUBLE_POINT);}
+"."            { return symbol(sym.POINT);}
 
-":="		       { return symbol(sym.AFFECT);}
+".."                       { return symbol(sym.DOUBLE_POINT);}
 
-"/="		       { return symbol(sym.DIFF);}
+":="                       { return symbol(sym.AFFECT);}
 
-">="		       { return symbol(sym.SUP_EGAL);}
+"/="                       { return symbol(sym.DIFF);}
 
-"<="		       { return symbol(sym.INF_EGAL);}
+">="                       { return symbol(sym.SUP_EGAL);}
 
-.                      { return symbol(sym.POINT);}
+"<="                       { return symbol(sym.INF_EGAL);}
 
-"(?i)IF"		{ return symbol(sym.IF);}
+{INT}                        { System.out.println( yytext()); try{
+                                                        return symbol(sym.CONST_ENT, new Integer(yytext()));
+                                                }catch(NumberFormatException e){
+                                                                System.out.println(e.toString() + "  ligne" + numLigne());
+                                                                throw new ErreurLexicale();
+                                                 }
+                                        }
 
-"(?i)WHILE"		{ return symbol(sym.WHILE);}
+{REEL}                        { System.out.println( yytext()); try{
+                                                        return symbol(sym.CONST_REEL, new Float(yytext()));
+                                                }catch(NumberFormatException e){
+                                                                System.out.println(e.toString() + "  ligne" + numLigne());
+                                                                throw new ErreurLexicale();
+                                                 }
+                                        }
 
-"(?i)AND"		{ return symbol(sym.AND);}
 
-"(?i)OR"		{ return symbol(sym.OR);}
+                                        
+{IDF}                                 { if (dictionnaire.containsKey(yytext().toLowerCase())) {
+                                                return symbol(dictionnaire.get(yytext().toLowerCase()));}
+                                          else {
+                                                  return symbol(sym.IDF,new String(yytext().toLowerCase()));
+                                                }
+                                        }
 
-"(?i)DO"		{ return symbol(sym.DO);}
+{CHAINE}                         { return(symbol(sym.CONST_CHAINE,new String(yytext())));}
+                                                          
+{COMM}          {}                                                
 
-"(?i)FOR"		{ return symbol(sym.FOR);}
-
-"(?i)NOT"		{ return symbol(sym.NOT);}
-
-"(?i)PROGRAM"               { return symbol(sym.PROGRAM);}
-
-"(?i)ARRAY"               { return symbol(sym.ARRAY);}
-
-"(?i)DOWNTO"               { return symbol(sym.DOWNTO);}
-
-"(?i)NULL"               { return symbol(sym.NULL);}
-
-"(?i)READ"               { return symbol(sym.READ);}
-
-"(?i)WRITE"               { return symbol(sym.WRITE);}
-
-"(?i)BEGIN"               { return symbol(sym.BEGIN);}
-
-"(?i)ELSE"               { return symbol(sym.ELSE);}
-
-"(?i)MOD"               { return symbol(sym.MOD);}
-
-"(?i)OF"               { return symbol(sym.OF);}
-
-"(?i)THEN"               { return symbol(sym.THEN);}
-
-"(?i)DIV"               { return symbol(sym.DIV);}
-
-"(?i)END"               { return symbol(sym.END);}
-
-"(?i)NEW_LINE"               { return symbol(sym.NEW_LINE);}
-
-"(?i)TO"               { return symbol(sym.TO);}
+.              { System.out.println("Erreur lexicale : '"+ yytext() +"' non reconnu ... ligne" + numLigne());
+                                        throw new ErreurLexicale();}
 
 // ------------
 // A COMPLETER
