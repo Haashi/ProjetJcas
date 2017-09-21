@@ -159,9 +159,9 @@ liste_idf ::= liste_idf:a1 VIRGULE idf:a2
    {: 
       RESULT = Arbre.creation2(Noeud.ListeIdent,a1,a2,a2.getNumLigne());
    :}
-   |  idf:i
+   | idf:i
    {:
-      RESULT = Arbre.creationIdent(i.getChaine(),parser.numLigne());
+      RESULT = Arbre.creation2(Noeud.ListeIdent,Arbre.creation0(Noeud.Vide,parser.numLigne()),i,i.getNumLigne());
    :}
    ;
 
@@ -212,6 +212,10 @@ idf ::= IDF:a
    {:
       RESULT = Arbre.creationIdent(a,parser.numLigne());
    :}
+   |
+   {:
+      RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
+   :}
    ;
 
 liste_inst ::= liste_inst:a1 inst:a2 POINT_VIRGULE
@@ -220,7 +224,7 @@ liste_inst ::= liste_inst:a1 inst:a2 POINT_VIRGULE
    :}
    |  inst:a3 POINT_VIRGULE
    {:
-       RESULT = a3;
+       RESULT = Arbre.creation2(Noeud.ListeInst,Arbre.creation0(Noeud.Vide,parser.numLigne()),a3,a3.getNumLigne());
    :}
    ;
 
@@ -278,13 +282,13 @@ liste_exp ::= liste_exp:a1 VIRGULE exp:a2
    :}
    |  exp:a3
    {:
-       RESULT = a3;
+       RESULT = Arbre.creation2(Noeud.ListeExp,Arbre.creation0(Noeud.Vide,parser.numLigne()),a3,a3.getNumLigne());
    :}
    ;
    
 exp ::= facteur:f4
    {:
-     RESULT = Arbre.creation1(Noeud.Conversion,f4,f4.getNumLigne()); 
+     RESULT = f4; 
    :}
    |  exp:a1 AND exp:a2
    {:
