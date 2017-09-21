@@ -226,20 +226,20 @@ import java.util.Hashtable;
 // Définition des macros
 // -------------------------------------
 
-CHIFFRE        = [0-9]
-LETTRE         = [a-zA-Z]
-//SIGNE          = {'+', '-', ''}
-IDF	           = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
-NUM  	         = CHIFFRE CHIFFRE*
-EXP            = 'E' SIGNE NUM + 'e' SIGNE NUM
-DEC            = NUM '.' NUM
-INT  	         = NUM
-REEL           = DEC + DEC EXP
-CHAINE_CAR     = "" + "!" + [\040-\176]
-CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
-COMM_CAR       = \t|[\040-\176]
-COMM           = "--"{COMM_CAR}*
 
+IDF                   = {LETTRE}({LETTRE}|{CHIFFRE}|"_")*
+INT                 = {NUM}
+REEL           = ({DEC}|{DEC}{EXP})
+EXP            = ("E"{SIGNE}{NUM} |"e"{SIGNE}{NUM})
+DEC            = {NUM}"."{NUM}
+CHIFFRE        = [0-9]
+NUM                 = {CHIFFRE}({CHIFFRE})*
+CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
+COMM           = --({COMM_CAR})*
+CHAINE_CAR     = ("" | "!" | [\040-\176])
+COMM_CAR       = ("\t" | [\040-\176])
+LETTRE         = [a-zA-Z]
+SIGNE                    = ("+" | "-" | "")
 
 
 
@@ -259,87 +259,76 @@ COMM           = "--"{COMM_CAR}*
 
 "+"                    { return symbol(sym.PLUS); }
 
-"<"		       { return symbol(sym.INF);}
 
-">"		       { return symbol(sym.SUP);}
+"<"                       { return symbol(sym.INF);}
 
-"="		       { return symbol(sym.EGAL);}
+">"                       { return symbol(sym.SUP);}
 
-"*"		       { return symbol(sym.MULT);}
+"="                       { return symbol(sym.EGAL);}
 
-"-"		       { return symbol(sym.MOINS);}
+"*"                       { return symbol(sym.MULT);}
 
-"/"		       { return symbol(sym.DIV_REEL);}
+"-"                       { return symbol(sym.MOINS);}
 
-"["		       { return symbol(sym.CROCH_OUVR);}
+"/"                       { return symbol(sym.DIV_REEL);}
 
-"]"		       { return symbol(sym.CROCH_FERM);}
+"["                       { return symbol(sym.CROCH_OUVR);}
 
-","		       { return symbol(sym.VIRGULE);}
+"]"                       { return symbol(sym.CROCH_FERM);}
 
-":"		       { return symbol(sym.DEUX_POINTS);}
+","                       { return symbol(sym.VIRGULE);}
 
-"("		       { return symbol(sym.PAR_OUVR);}
+":"                       { return symbol(sym.DEUX_POINTS);}
 
-")"		       { return symbol(sym.PAR_FER);}
+"("                       { return symbol(sym.PAR_OUVR);}
 
-";"		       { return symbol(sym.POINT_VIRGULE);}
+")"                       { return symbol(sym.PAR_FERM);}
 
-".."		       { return symbol(sym.DOUBLE_POINT);}
+";"                       { return symbol(sym.POINT_VIRGULE);}
 
-":="		       { return symbol(sym.AFFECT);}
+"."          { return symbol(sym.POINT);}
 
-"/="		       { return symbol(sym.DIFF);}
+".."                       { return symbol(sym.DOUBLE_POINT);}
 
-">="		       { return symbol(sym.SUP_EGAL);}
+":="                       { return symbol(sym.AFFECT);}
 
-"<="		       { return symbol(sym.INF_EGAL);}
+"/="                       { return symbol(sym.DIFF);}
 
-.                      { return symbol(sym.POINT);}
+">="                       { return symbol(sym.SUP_EGAL);}
 
-"(?i)IF"		{ return symbol(sym.IF);}
+"<="                       { return symbol(sym.INF_EGAL);}
 
-"(?i)WHILE"		{ return symbol(sym.WHILE);}
+{INT}                        { System.out.println( yytext()); try{
+                                                        return symbol(sym.CONST_ENT, new Integer(yytext()));
+                                                }catch(NumberFormatException e){
+                                                                System.out.println(e.toString() + "  ligne" + numLigne());
+                                                                throw new ErreurLexicale();
+                                                 }
+                                        }
 
-"(?i)AND"		{ return symbol(sym.AND);}
+{REEL}                        { System.out.println( yytext()); try{
+                                                        return symbol(sym.CONST_REEL, new Float(yytext()));
+                                                }catch(NumberFormatException e){
+                                                                System.out.println(e.toString() + "  ligne" + numLigne());
+                                                                throw new ErreurLexicale();
+                                                 }
+                                        }
 
-"(?i)OR"		{ return symbol(sym.OR);}
 
-"(?i)DO"		{ return symbol(sym.DO);}
+                                        
+{IDF}                                 { if (dictionnaire.containsKey(yytext().toLowerCase())) {
+                                                return symbol(dictionnaire.get(yytext().toLowerCase()));}
+                                          else {
+                                                  return symbol(sym.IDF,new String(yytext().toLowerCase()));
+                                                }
+                                        }
 
-"(?i)FOR"		{ return symbol(sym.FOR);}
+{CHAINE}                         { return(symbol(sym.CONST_CHAINE,new String(yytext())));}
+                                                          
+{COMM}          {}                                                
 
-"(?i)NOT"		{ return symbol(sym.NOT);}
-
-"(?i)PROGRAM"               { return symbol(sym.PROGRAM);}
-
-"(?i)ARRAY"               { return symbol(sym.ARRAY);}
-
-"(?i)DOWNTO"               { return symbol(sym.DOWNTO);}
-
-"(?i)NULL"               { return symbol(sym.NULL);}
-
-"(?i)READ"               { return symbol(sym.READ);}
-
-"(?i)WRITE"               { return symbol(sym.WRITE);}
-
-"(?i)BEGIN"               { return symbol(sym.BEGIN);}
-
-"(?i)ELSE"               { return symbol(sym.ELSE);}
-
-"(?i)MOD"               { return symbol(sym.MOD);}
-
-"(?i)OF"               { return symbol(sym.OF);}
-
-"(?i)THEN"               { return symbol(sym.THEN);}
-
-"(?i)DIV"               { return symbol(sym.DIV);}
-
-"(?i)END"               { return symbol(sym.END);}
-
-"(?i)NEW_LINE"               { return symbol(sym.NEW_LINE);}
-
-"(?i)TO"               { return symbol(sym.TO);}
+.              { System.out.println("Erreur lexicale : '"+ yytext() +"' non reconnu ... ligne" + numLigne());
+                                        throw new ErreurLexicale();}
 
 // ------------
 // A COMPLETER
