@@ -234,7 +234,6 @@ EXP            = ("E"{SIGNE}{NUM} |"e"{SIGNE}{NUM})
 DEC            = {NUM}"."{NUM}
 CHIFFRE        = [0-9]
 NUM                 = {CHIFFRE}({CHIFFRE})*
-
 CHAINE         = \"({CHAINE_CAR}|(\"\"))*\"
 COMM           = --({COMM_CAR})*
 CHAINE_CAR     = ("" | "!" | [\040-\176])
@@ -259,6 +258,7 @@ SIGNE                    = ("+" | "-" | "")
 \n                     { }
 
 "+"                    { return symbol(sym.PLUS); }
+
 
 "<"                       { return symbol(sym.INF);}
 
@@ -286,7 +286,7 @@ SIGNE                    = ("+" | "-" | "")
 
 ";"                       { return symbol(sym.POINT_VIRGULE);}
 
-"."            { return symbol(sym.POINT);}
+"."          { return symbol(sym.POINT);}
 
 ".."                       { return symbol(sym.DOUBLE_POINT);}
 
