@@ -159,19 +159,19 @@ liste_idf ::= liste_idf:a1 VIRGULE idf:a2
    {: 
       RESULT = Arbre.creation2(Noeud.ListeIdent,a1,a2,a2.getNumLigne());
    :}
-   |  idf
+   |  idf:i
    {:
-      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
+      RESULT = Arbre.creationIdent(i.getChaine(),parser.numLigne());
    :}
    ;
 
-type ::= idf:a1
+type ::= idf:i
    {:
-      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
+      RESULT = Arbre.creationIdent(i.getChaine(),parser.numLigne());
    :}
    |  type_intervalle:a2
    {:
-      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
+      RESULT = a2;
    :}
    |  ARRAY CROCH_OUVR type_intervalle:a3 CROCH_FERM OF type:a4
    {:
@@ -195,22 +195,22 @@ constante ::= PLUS const:c1
    :}
    |  const:c3
    {:
-      RESULT = Arbre.creation1(Noeud.Entier,c3,c3.getNumLigne());
+      RESULT = Arbre.creationEntier(c3.getEntier(),parser.numLigne());
    :}
    ;
 
 const ::= CONST_ENT:ce 
    {:
-      RESULT = Arbre.creation1(Noeud.Entier,ce,ce.getNumLigne());
+      RESULT = Arbre.creationEntier(ce,parser.numLigne());
    :}
-   |  idf
+   |  idf:i
    {:
-      RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
+      RESULT = Arbre.creationIdent(i.getChaine(),parser.numLigne());
    :}
    ;
 idf ::= IDF:a
    {:
-      RESULT = Arbre.creation1(Noeud.Ident,a,a.getNumLigne());
+      RESULT = Arbre.creationIdent(a,parser.numLigne());
    :}
    ;
 
@@ -218,9 +218,9 @@ liste_inst ::= liste_inst:a1 inst:a2 POINT_VIRGULE
    {: 
        RESULT = Arbre.creation2(Noeud.ListeInst,a1,a2,a2.getNumLigne());
    :}
-   |  inst POINT_VIRGULE
+   |  inst:a3 POINT_VIRGULE
    {:
-       RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
+       RESULT = a3;
    :}
    ;
 
@@ -236,13 +236,13 @@ inst ::= NULL
    {:
       RESULT = Arbre.creation2(Noeud.Pour,a3,a4,a4.getNumLigne());      
    :}
-   |  WHILE exp:a5 DO liste_inst=a6 END
+   |  WHILE exp:a5 DO liste_inst:a6 END
    {:
       RESULT = Arbre.creation2(Noeud.TantQue,a5,a6,a6.getNumLigne());
    :}
    |  IF exp:a7 THEN liste_inst:a8 END
    {:
-      RESULT = Arbre.creation3(Noeud.Si,a7,a8,NULL,a8.getNumLigne());
+      RESULT = Arbre.creation3(Noeud.Si,a7,a8,Arbre.creation0(Noeud.Vide,parser.numLigne()),a8.getNumLigne());
    :}
    |  IF exp:b1 THEN liste_inst:b2 ELSE liste_inst:b3 END
    {:
@@ -278,7 +278,7 @@ liste_exp ::= liste_exp:a1 VIRGULE exp:a2
    :}
    |  exp:a3
    {:
-       RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
+       RESULT = a3;
    :}
    ;
    
@@ -324,7 +324,7 @@ exp ::= facteur:f4
    :}
    |  exp:c3 MOINS exp:c4
    {:
-       RESULT = Arbre.creation2(Noeud.Moins,c2,c3,getNumLigne());      
+       RESULT = Arbre.creation2(Noeud.Moins,c3,c4,c4.getNumLigne());      
    :}
    |  exp:c5 MULT exp:c6
    {:
@@ -338,7 +338,7 @@ exp ::= facteur:f4
    {:
        RESULT = Arbre.creation2(Noeud.Reste,d1,d2,d2.getNumLigne());
    :}
-   |  exp:d3 DIV exp:4
+   |  exp:d3 DIV exp:d4
    {:
        RESULT = Arbre.creation2(Noeud.Quotient,d3,d4,d4.getNumLigne());
    :}
@@ -358,29 +358,29 @@ exp ::= facteur:f4
 
 facteur ::= CONST_ENT:ce
    {:
-      RESULT = Arbre.creation1(Noeud.Entier,ce,ce.getNumLigne());
+      RESULT = Arbre.creationEntier(ce,parser.numLigne());
    :}
-   |  CONST_REEL:cr
+   |  CONST_REEL:cr 
    {: 
-      RESULT = Arbre.creation1(Noeud.Reel,cr,cr.getNumLigne());
+      RESULT = Arbre.creationReel(cr,parser.numLigne());
    :}
    |  CONST_CHAINE:cc
    {:
-      RESULT = Arbre.creation1(Noeud.Chaine,cc,cc.getNumLigne());
+      RESULT = Arbre.creationChaine(cc,parser.numLigne());
    :}
-   |  place
+   |  place:p
    {:
-      RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
+      RESULT = p;
    :}
-   |  PAR_OUVR exp PAR_FERM
+   |  PAR_OUVR exp:e PAR_FERM
    {:
-      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
+      RESULT = e;
    :}
    ;
 
-place ::= idf
+place ::= idf:i
    {:
-      RESULT = Arbre.creation0(Noeus.Vide, parser.numLigne());
+      RESULT = Arbre.creationIdent(i.getChaine(), parser.numLigne());
    :}
    |  place:p1 CROCH_OUVR exp:p2 CROCH_FERM
    {:
