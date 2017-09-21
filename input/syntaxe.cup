@@ -167,11 +167,11 @@ liste_idf ::= liste_idf:a1 VIRGULE idf:a2
 
 type ::= idf:a1
    {:
-      RESULT = Ident(a1);
+      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
    :}
    |  type_intervalle:a2
    {:
-      RESULT = Intervalle(a2);
+      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
    :}
    |  ARRAY CROCH_OUVR type_intervalle:a3 CROCH_FERM OF type:a4
    {:
@@ -185,32 +185,32 @@ type_intervalle ::= constante:c1 DOUBLE_POINT constante:c2
    :}
    ;
 
-constante ::= PLUS const
+constante ::= PLUS const:c1
    {:
-      
+     RESULT = Arbre.creation1(Noeud.PlusUnaire,c1,c1.getNumLigne()); 
    :}
-   |  MOINS const
+   |  MOINS const:c2
    {: 
-      
+      RESULT = Arbre.creation1(Noeud.MoinsUnaire,c2,c2.getNumLigne());
    :}
-   |  const
+   |  const:c3
    {:
-      
+      RESULT = Arbre.creation1(Noeud.Entier,c3,c3.getNumLigne());
    :}
    ;
 
-const ::= CONST_ENT
+const ::= CONST_ENT:ce 
    {:
-      
+      RESULT = Arbre.creation1(Noeud.Entier,ce,ce.getNumLigne());
    :}
    |  idf
    {:
-      
+      RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
    :}
    ;
-idf ::= IDF
+idf ::= IDF:a
    {:
-      
+      RESULT = Arbre.creation1(Noeud.Ident,a,a.getNumLigne());
    :}
    ;
 
@@ -370,17 +370,17 @@ facteur ::= CONST_ENT:ce
    :}
    |  place
    {:
-      
+      RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
    :}
    |  PAR_OUVR exp PAR_FERM
    {:
-      
+      RESULT = Arbre.creation0(Noeud.Vide, parser.numLigne());
    :}
    ;
 
 place ::= idf
    {:
-      
+      RESULT = Arbre.creation0(Noeus.Vide, parser.numLigne());
    :}
    |  place:p1 CROCH_OUVR exp:p2 CROCH_FERM
    {:
