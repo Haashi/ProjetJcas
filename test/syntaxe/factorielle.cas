@@ -1,0 +1,17 @@
+-- Fonction factorielle
+program 
+   n, fact : integer ;
+begin
+   write("Entrer un entier : ") ; 
+   -- Lecture d'un entier
+   read(n) ; 
+   -- Calcul de la factorielle
+   fact := 1 ; 
+   while n >= 1 do
+      fact := fact * n ; 
+      n := n - 1 ; 
+   end ; 
+   -- Affichage du resultat
+   write("factorielle = ", fact) ; 
+   new_line ; 
+end.
