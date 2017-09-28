@@ -150,240 +150,244 @@ liste_decl ::= liste_decl:a1 decl:a2 POINT_VIRGULE
 
 
 
-decl ::= liste_idf DEUX_POINTS type
+decl ::= liste_idf:a1 DEUX_POINTS type:a2
    {:
-      
+      RESULT = Arbre.creation2(Noeud.Decl,a1,a2,a2.getNumLigne()); 
    :}
    ;
-liste_idf ::= liste_idf VIRGULE idf
+liste_idf ::= liste_idf:a1 VIRGULE idf:a2
    {: 
-      
+      RESULT = Arbre.creation2(Noeud.ListeIdent,a1,a2,a2.getNumLigne());
    :}
-   |  idf
+   | idf:i
    {:
-      
+      RESULT = Arbre.creation2(Noeud.ListeIdent,Arbre.creation0(Noeud.Vide,parser.numLigne()),i,i.getNumLigne());
    :}
    ;
 
-type ::= idf
+type ::= idf:i
    {:
-      
+      RESULT = Arbre.creationIdent(i.getChaine(),parser.numLigne());
    :}
-   |  type_intervalle
+   |  type_intervalle:a2
    {:
-      
+      RESULT = a2;
    :}
-   |  ARRAY CROCH_OUVR type_intervalle CROCH_FERM OF type
+   |  ARRAY CROCH_OUVR type_intervalle:a3 CROCH_FERM OF type:a4
    {:
-      
-   :}
-   ;
-
-type_intervalle ::= constante DOUBLE_POINT constante
-   {:
-      
+      RESULT = Arbre.creation2(Noeud.Tableau,a3,a4,a4.getNumLigne());
    :}
    ;
 
-constante ::= PLUS const
+type_intervalle ::= constante:c1 DOUBLE_POINT constante:c2
    {:
-      
+      RESULT = Arbre.creation2(Noeud.Intervalle,c1,c2,c2.getNumLigne());
    :}
-   |  MOINS const
+   ;
+
+constante ::= PLUS const:c1
+   {:
+     RESULT = Arbre.creation1(Noeud.PlusUnaire,c1,c1.getNumLigne()); 
+   :}
+   |  MOINS const:c2
    {: 
-      
+      RESULT = Arbre.creation1(Noeud.MoinsUnaire,c2,c2.getNumLigne());
    :}
-   |  const
+   |  const:c3
    {:
-      
+      RESULT = Arbre.creationEntier(c3.getEntier(),parser.numLigne());
    :}
    ;
 
-const ::= CONST_ENT
+const ::= CONST_ENT:ce 
    {:
-      
+      RESULT = Arbre.creationEntier(ce,parser.numLigne());
    :}
-   |  idf
+   |  idf:i
    {:
-      
+      RESULT = Arbre.creationIdent(i.getChaine(),parser.numLigne());
    :}
    ;
-idf ::= IDF
+idf ::= IDF:a
    {:
-      
+      RESULT = Arbre.creationIdent(a,parser.numLigne());
+   :}
+   |
+   {:
+      RESULT = Arbre.creation0(Noeud.Vide,parser.numLigne());
    :}
    ;
 
-liste_inst ::= liste_inst inst POINT_VIRGULE
+liste_inst ::= liste_inst:a1 inst:a2 POINT_VIRGULE
    {: 
-      
+       RESULT = Arbre.creation2(Noeud.ListeInst,a1,a2,a2.getNumLigne());
    :}
-   |  inst POINT_VIRGULE
+   |  inst:a3 POINT_VIRGULE
    {:
-      
+       RESULT = Arbre.creation2(Noeud.ListeInst,Arbre.creation0(Noeud.Vide,parser.numLigne()),a3,a3.getNumLigne());
    :}
    ;
 
 inst ::= NULL
    {:
-
+		RESULT = Arbre.creation0(Noeud.Nop,parser.numLigne());
    :}
-   |  place AFFECT exp
+   |  place:a1 AFFECT exp:a2
    {:
-      
+      RESULT = Arbre.creation2(Noeud.Affect,a1,a2,a2.getNumLigne());
    :}
-   |  FOR pas DO liste_inst END
+   |  FOR pas:a3 DO liste_inst:a4 END
    {:
-      
+      RESULT = Arbre.creation2(Noeud.Pour,a3,a4,a4.getNumLigne());      
    :}
-   |  WHILE exp DO liste_inst END
+   |  WHILE exp:a5 DO liste_inst:a6 END
    {:
-      
+      RESULT = Arbre.creation2(Noeud.TantQue,a5,a6,a6.getNumLigne());
    :}
-   |  IF exp THEN liste_inst END
+   |  IF exp:a7 THEN liste_inst:a8 END
    {:
-      
+      RESULT = Arbre.creation3(Noeud.Si,a7,a8,Arbre.creation0(Noeud.Vide,parser.numLigne()),a8.getNumLigne());
    :}
-   |  IF exp THEN liste_inst ELSE liste_inst END
+   |  IF exp:b1 THEN liste_inst:b2 ELSE liste_inst:b3 END
    {:
-      
+      RESULT = Arbre.creation3(Noeud.Si,b1,b2,b3,b3.getNumLigne());
    :}
-   |  WRITE PAR_OUVR liste_exp PAR_FERM
+   |  WRITE PAR_OUVR liste_exp:b4 PAR_FERM
    {:
-      
+      RESULT = Arbre.creation1(Noeud.Ecriture,b4,b4.getNumLigne());
    :}
-   |  READ PAR_OUVR place PAR_FERM
+   |  READ PAR_OUVR place:b5 PAR_FERM
    {:
-      
+      RESULT = Arbre.creation1(Noeud.Lecture,b5,b5.getNumLigne());
    :}
    |  NEW_LINE
    {:
-      
+      RESULT = Arbre.creation0(Noeud.Ligne,parser.numLigne());
    :}
    ;
 
-pas ::= idf AFFECT exp TO exp
+pas ::= idf:a1 AFFECT exp:a2 TO exp:a3
    {:
-      
+      RESULT = Arbre.creation3(Noeud.Increment,a1,a2,a3,a3.getNumLigne()); 
    :}
-   |  idf AFFECT exp DOWNTO exp
+   |  idf:a4 AFFECT exp:a5 DOWNTO exp:a6
    {: 
-      
+      RESULT = Arbre.creation3(Noeud.Decrement,a4,a5,a6,a6.getNumLigne());
    :}
    ;
 
-liste_exp ::= liste_exp VIRGULE exp
+liste_exp ::= liste_exp:a1 VIRGULE exp:a2
    {:
-      
+       RESULT = Arbre.creation2(Noeud.ListeExp,a1,a2,a2.getNumLigne());
    :}
-   |  exp
+   |  exp:a3
    {:
-      
+       RESULT = Arbre.creation2(Noeud.ListeExp,Arbre.creation0(Noeud.Vide,parser.numLigne()),a3,a3.getNumLigne());
    :}
    ;
    
-exp ::= facteur
+exp ::= facteur:f4
    {:
-      
+     RESULT = f4; 
    :}
-   |  exp AND exp
+   |  exp:a1 AND exp:a2
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Et,a1,a2,a2.getNumLigne());
    :}
-   |  exp OR exp
+   |  exp:a3 OR exp:a4
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Ou,a3,a4,a4.getNumLigne());
    :}
-   |  exp EGAL exp
+   |  exp:a5 EGAL exp:a6
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Egal,a5,a6,a6.getNumLigne());
    :}
-   |  exp INF_EGAL exp
+   |  exp:a7 INF_EGAL exp:a8
    {:
-      
+       RESULT = Arbre.creation2(Noeud.InfEgal,a7,a8,a8.getNumLigne());
    :}
-   |  exp SUP_EGAL exp
+   |  exp:b1 SUP_EGAL exp:b2
    {:
-      
+       RESULT = Arbre.creation2(Noeud.SupEgal,b1,b2,b2.getNumLigne());
    :}
-   |  exp DIFF exp
+   |  exp:b3 DIFF exp:b4
    {:
-      
+       RESULT = Arbre.creation2(Noeud.NonEgal,b3,b4,b4.getNumLigne());
    :}
-   |  exp INF exp
+   |  exp:b5 INF exp:b6
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Inf,b5,b6,b6.getNumLigne());
    :}
-   |  exp SUP exp
+   |  exp:b7 SUP exp:b8
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Sup,b7,b8,b8.getNumLigne());
    :}
-   |  exp PLUS exp
+   |  exp:c1 PLUS exp:c2
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Plus,c1,c2,c2.getNumLigne());
    :}
-   |  exp MOINS exp
+   |  exp:c3 MOINS exp:c4
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Moins,c3,c4,c4.getNumLigne());      
    :}
-   |  exp MULT exp
+   |  exp:c5 MULT exp:c6
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Mult,c5,c6,c6.getNumLigne());
    :}
-   |  exp DIV_REEL exp
+   |  exp:c7 DIV_REEL exp:c8
    {:
-      
+       RESULT = Arbre.creation2(Noeud.DivReel,c7,c8,c8.getNumLigne());
    :}
-   |  exp MOD exp
+   |  exp:d1 MOD exp:d2
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Reste,d1,d2,d2.getNumLigne());
    :}
-   |  exp DIV exp
+   |  exp:d3 DIV exp:d4
    {:
-      
+       RESULT = Arbre.creation2(Noeud.Quotient,d3,d4,d4.getNumLigne());
    :}
-   |  PLUS facteur
+   |  PLUS facteur:f1
    {: 
-      
+       RESULT = Arbre.creation1(Noeud.PlusUnaire,f1,f1.getNumLigne());
    :}
-   |  MOINS facteur
+   |  MOINS facteur:f2
    {: 
-      
+     RESULT = Arbre.creation1(Noeud.MoinsUnaire,f2,f2.getNumLigne()); 
    :}
-   |  NOT facteur
+   |  NOT facteur:f3
    {: 
-      
+      RESULT = Arbre.creation1(Noeud.Non,f3,f3.getNumLigne());
    :}
    ;
 
-facteur ::= CONST_ENT
+facteur ::= CONST_ENT:ce
    {:
-      
+      RESULT = Arbre.creationEntier(ce,parser.numLigne());
    :}
-   |  CONST_REEL
+   |  CONST_REEL:cr 
    {: 
-      
+      RESULT = Arbre.creationReel(cr,parser.numLigne());
    :}
-   |  CONST_CHAINE
+   |  CONST_CHAINE:cc
    {:
-      
+      RESULT = Arbre.creationChaine(cc,parser.numLigne());
    :}
-   |  place
+   |  place:p
    {:
-      
+      RESULT = p;
    :}
-   |  PAR_OUVR exp PAR_FERM
+   |  PAR_OUVR exp:e PAR_FERM
    {:
-      
+      RESULT = e;
    :}
    ;
 
-place ::= idf
+place ::= idf:i
    {:
-      
+      RESULT = Arbre.creationIdent(i.getChaine(), parser.numLigne());
    :}
-   |  place CROCH_OUVR exp CROCH_FERM
+   |  place:p1 CROCH_OUVR exp:p2 CROCH_FERM
    {:
-      
+      RESULT = Arbre.creation2(Noeud.Index,p1,p2,p2.getNumLigne());
    :}
    ;
