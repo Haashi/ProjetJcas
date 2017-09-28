@@ -298,7 +298,7 @@ SIGNE                    = ("+" | "-" | "")
 
 "<="                       { return symbol(sym.INF_EGAL);}
 
-{INT}                        { System.out.println( yytext()); try{
+{INT}                        {try{
                                                         return symbol(sym.CONST_ENT, new Integer(yytext()));
                                                 }catch(NumberFormatException e){
                                                                 System.out.println(e.toString() + "  ligne" + numLigne());
@@ -306,7 +306,7 @@ SIGNE                    = ("+" | "-" | "")
                                                  }
                                         }
 
-{REEL}                        { System.out.println( yytext()); try{
+{REEL}                        {try{
                                                         return symbol(sym.CONST_REEL, new Float(yytext()));
                                                 }catch(NumberFormatException e){
                                                                 System.out.println(e.toString() + "  ligne" + numLigne());
