@@ -39,6 +39,31 @@ public class Verif {
       def.setGenre(Genre.PredefInteger);
       env.enrichir("integer", def);
       
+      // boolean
+      def = Defn.creationType(Type.Boolean);
+      def.setGenre(Genre.PredefBoolean);
+      env.enrichir("boolean", def);
+      
+      // real
+      def = Defn.creationType(Type.Real);
+      def.setGenre(Genre.PredefReal);
+      env.enrichir("real", def);
+      
+      //true
+      def = Defn.creationConstBoolean(true);
+      def.setGenre(Genre.PredefTrue);
+      env.enrichir("true", def);
+      
+      //false
+      def = Defn.creationConstBoolean(false);
+      def.setGenre(Genre.PredefFalse);
+      env.enrichir("false", def);
+      
+      //max_int
+      def = Defn.creationConstInteger(java.lang.Integer.MAX_VALUE);
+      def.setGenre(Genre.PredefMaxInt);
+      env.enrichir("max_int", def);
+      
       // ------------
       // A COMPLETER
       // ------------
@@ -57,7 +82,7 @@ public class Verif {
     * LISTE_DECL
     **************************************************************************/
    private void verifier_LISTE_DECL(Arbre a) throws ErreurVerif {
-      // A COMPLETER
+	// A COMPLETER
 	   switch(a.getNoeud()) {
 	   	case ListeDecl:
 	   		verifier_LISTE_DECL(a.getFils1());
@@ -69,6 +94,7 @@ public class Verif {
 	   		throw new ErreurInterneVerif(
 	   				"Arbre incorrect dans verifier_LISTE_DECL");
 	   }
+	   
    }
    
    /**************************************************************************
@@ -77,6 +103,9 @@ public class Verif {
    
    private void verifier_DECL(Arbre a) throws ErreurVerif{
 	   // A COMPLETER
+
+	   
+	   verifier_LISTE_IDF_Decl(a.getFils1(),verifier_TYPE(a.getFils2()));
    }
    
    /**************************************************************************
@@ -86,100 +115,59 @@ public class Verif {
       // A COMPLETER
    }
    
-   /**************************************************************************
-    * INST
-    **************************************************************************/
-   
-   private void verifier_INST(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
+   private void verifier_LISTE_IDF_Decl(Arbre a, Type type) throws ErreurVerif {
+	   switch(a.getNoeud()) {
+	   	case ListeIdent:
+	   		verifier_LISTE_IDF_Decl(a.getFils1(),type);
+	   		verifier_IDF_Decl(a.getFils2(),type);
+	   		break;
+	   	case Vide:
+	   		break;
+	   	default:
+	   		throw new ErreurInterneVerif(
+	   				"Arbre incorrect dans verifier_LISTE_DECL");
+	   }
    }
    
-   /**************************************************************************
-    * LISTE_IDF
-    **************************************************************************/
-   
-   private void verifier_LIST_IDF(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
+   private void verifier_IDF_Decl(Arbre a, Type type) throws ErreurVerif{
+	   Defn def = env.chercher(a.getChaine());
+	   if(def!=null) {
+		   throw new ErreurVerif();
+	   }
+	   def = Defn.creationVar(type);
+	   def.setGenre(Genre.NonPredefini);
+	   env.enrichir(a.getChaine(), def);
+	   Decor decor = new Decor(def);
+	   a.setDecor(decor);
    }
    
-   /**************************************************************************
-    * IDF
-    **************************************************************************/
-   
-   private void verifier_IDF(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
+   private Type verifier_TYPE(Arbre a) throws ErreurVerif{
+	   Type type = null;
+	   switch (a.getNoeud()) {
+	   	case Ident:
+	   		type = verifier_IDF_Type(a);
+	   		break;
+	   	case Intervalle:
+	   		type = Type.creationInterval(a.getFils1().getEntier(),a.getFils2().getEntier());
+	   		break;
+	   	case Tableau:
+	   		type = Type.creationArray(verifier_TYPE(a.getFils1()), verifier_TYPE(a.getFils2()));
+	   		break;
+	   	default:
+	   		break;
+	   }
+	   return type;
    }
    
-   /**************************************************************************
-    * TYPE
-    **************************************************************************/
    
-   private void verifier_TYPE(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * TYPE_INTERVALLE
-    **************************************************************************/
-   
-   private void verifier_TYPE_INTERVALLE(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * CONSTANTE
-    **************************************************************************/
-   
-   private void verifier_CONSTANTE(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * CONST
-    **************************************************************************/
-   
-   private void verifier_CONST(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * PAS
-    **************************************************************************/
-   
-   private void verifier_PAS(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * LISTE_EXP
-    **************************************************************************/
-   
-   private void verifier_LISTE_EXP(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * EXP
-    **************************************************************************/
-   
-   private void verifier_EXP(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * FACTEUR
-    **************************************************************************/
-   
-   private void verifier_FACTEUR(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
-   }
-   
-   /**************************************************************************
-    * PLACE
-    **************************************************************************/
-   
-   private void verifier_PLACE(Arbre a) throws ErreurVerif{
-	   // A COMPLETER
+   private Type verifier_IDF_Type(Arbre a) throws ErreurVerif{
+	   Defn def = env.chercher(a.getChaine());
+	   if(def==null) {
+		   throw new ErreurVerif();
+	   }
+	   Decor decor = new Decor(def);
+	   a.setDecor(decor);
+	   return def.getType();
    }
    // ------------------------------------------------------------------------
    // COMPLETER les operations de vérifications et de décoration pour toutes 
