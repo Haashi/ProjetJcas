@@ -8,18 +8,35 @@
 // A COMPLETER, avec les différents types d'erreur et les messages d'erreurs 
 // correspondants
 // -------------------------------------------------------------------------
-
+//ErreurContext.ErreurOperationInvalide.leverErreurContext("kikoo", 506984); utilisation
 package fr.esisar.compilation.verif;
 
-public enum ErreurContext {
+public enum ErreurContext 
+{
    
-   ErreurNonRepertoriee;
+   ErreurNonRepertoriee,
+   ErreurOperationInvalide,
+   ErreurMauvaiseDeclaration,
+   ErreurIdentificateurNonDeclare;
+   
+   
 
-   void leverErreurContext(String s, int numLigne) throws ErreurVerif {
+   void leverErreurContext(String s, int numLigne) throws ErreurVerif 
+   {
       System.err.println("Erreur contextuelle : ");
-      switch (this) {
+      switch (this) 
+      {
+      	case ErreurOperationInvalide:
+      		System.err.print("Operation invalide " + s);
+      		break;
+      	case ErreurMauvaiseDeclaration:
+      		System.err.println("Declaration incorrecte " + s);
+      		break;
+      	case ErreurIdentificateurNonDeclare:
+      		System.err.print("Variable non declare " + s);
+      		break;
          default:
-            System.err.print("non repertoriee");
+            System.err.print("Non repertoriee");
       }
       System.err.println(" ... ligne " + numLigne);
       throw new ErreurVerif();
