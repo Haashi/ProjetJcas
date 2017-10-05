@@ -29,7 +29,8 @@ public class ReglesTypage {
 				   case Real:
 					   	conv2=true;
 					   	break;
-				   default : break;}
+				   default : break;
+			   }
 			   break;
 			   
 		  case Array:
@@ -43,7 +44,8 @@ public class ReglesTypage {
 					   }
 					   break;
 				   default : 
-						break;}
+						break;
+				}
 		 default:
 			 break;
 	  }
