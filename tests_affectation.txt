@@ -1,0 +1,240 @@
+Verification contextuelle, tests :
+
+Erreurs possibles :
+
+  Affectation :
+    real := | real | +,-,* | int -> OK
+                           | real -> OK
+                           | Boolean -> ERR
+                           | INTERVALLE -> OK
+                           | Array(int,real,INTERVALLE)[int] -> OK
+                           | Array_ -> ERR
+                   | / | int -> OK
+                       | real -> OK
+                       | Boolean -> ERR
+                       | INTERVALLE -> OK
+                       | Array(int,real,INTERVALLE)[int] -> OK
+                       | Array_ -> ERR
+                   | and,or,not,div,mod,=,<,>,/=,<=,>=,[] -> ERR
+                   |
+            | int,INTERVALLE  | +,-,* | int -> OK
+                                      | real -> OK
+                                      | Boolean -> ERR
+                                      | INTERVALLE -> OK
+                                      | Array(int,real,INTERVALLE)[int] -> OK
+                                      | Array(_) -> ERR
+                              | / | int -> OK
+                                  | real -> OK
+                                  | Boolean -> ERR
+                                  | INTERVALLE -> OK
+                                  | Array[int,real,INTERVALLE] -> OK
+                                  | Array_ -> ERR
+                                  | and,or,not,div,mod,=,<,>,/=,<=,>=,[] -> ERR
+                              |
+            | Boolean -> ERR
+            | Array(int,INTERVALLE)[int] -> | +,-,* | int -> OK
+                                               | real -> OK
+                                               | Boolean -> ERR
+                                               | INTERVALLE -> OK
+                                               | Array(int,real,INTERVALLE)[int] -> ERR
+                                               | Array_
+                                       | / | int -> OK
+                                           | real -> OK
+                                           | Boolean -> ERR
+                                           | INTERVALLE -> OK
+                                           | Array(int,real,INTERVALLE)[int] -> OK
+                                           | Array_ -> ERR
+                                       | and,or,not,div,mod,=,<,>,/=,<=,>=,[] -> ERR
+            | Array(real)[int] -> | +,-,* | int -> OK
+                                     | real -> OK
+                                     | Boolean -> ERR
+                                     | INTERVALLE -> OK
+                                     | Array(int,real,INTERVALLE)[int] -> OK
+                                     | Array_ -> ERR
+                             | / | int -> OK
+                                 | real -> OK
+                                 | Boolean -> ERR
+                                 | INTERVALLE -> OK
+                                 | Array(int,real,INTERVALLE)[int] -> OK
+                                 | Array_ -> ERR
+                             | and,or,not,div,mod,=,<,>,/=,<=,>=,[] -> ERR
+            | Array_ -> ERR
+            | and,or,not,=,<,>,/=,<=,>=,[] -> ERR
+            | +,- | int -> OK
+                  | real -> OK
+                  | Boolean -> ERR
+                  | INTERVALLE -> OK
+                  | Array(int,real,INTERVALLE)[int] -> OK
+                  | Array_ -> ERR
+
+    int :=  | real -> ERR
+            | int,INTERVALLE | +,-,* | int -> OK
+                                     | real -> ERR
+                                     | Boolean -> ERR
+                                     | INTERVALLE -> OK
+                                     | Array(int,INTERVALLE)[int] -> OK
+                                     | Array_ -> ERR
+                             | / -> ERR
+                             | and,or,not,=,<,>,/=,<=,>=,[] -> ERR
+                             | div,mod -> | int -> OK
+                                          | real -> ERR
+                                          | Boolean -> ERR
+                                          | INTERVALLE -> OK
+                                          | Array(int,INTERVALLE)[int] -> OK
+                                          | Array_ -> ERR
+            | Boolean -> ERR
+            | Array(int,INTERVALLE)[int] - > | +,-,* | int -> OK
+                                                     | real -> ERR
+                                                     | Boolean -> ERR
+                                                     | INTERVALLE -> OK
+                                                     | Array(int,INTERVALLE)[int] -> OK
+                                                     | Array_ -> ERR
+                                             | / -> ERR
+                                             | and,or,not,=,<,>,/=,<=,>=,[] -> ERR
+                                             | div,mod -> | int -> OK
+                                                          | real -> ERR
+                                                          | Boolean -> ERR
+                                                          | INTERVALLE -> OK
+                                                          | Array(int,INTERVALLE)[int] -> OK
+                                                          | Array_ -> ERR
+            | Array_ -> ERR
+            |+,- -> | int,INTERVALLE -> OK
+                    | real -> ERR
+                    | Boolean -> ERR
+                    | Array(int,INTERVALLE)[int] -> OK
+                    | Array_ -> ERR
+            | and,or,not,div,mod,=,<,>,/=,<=,>=,[] -> ERR
+
+    Boolean := | real | =,<,>,/=,<=,>= | real -> OK
+                                       | int -> OK
+                                       | Boolean -> ERR
+                                       | INTERVALLE -> OK
+                                       | Array(real,int,INTERVALLE)[int] -> OK
+                                       | Array_ -> ERR
+                      | +,-,*,/,and,or,div,mod,[] -> ERR
+               | int | =,<,>,/=,<=,>= | real -> OK
+                                      | int -> OK
+                                      | Boolean -> ERR
+                                      | INTERVALLE -> OK
+                                      | Array(real,int,INTERVALLE)[int] -> OK
+                                      | Array_ -> OK
+                     | +,-,*,/,and,or,div,mod -> ERR
+               | Boolean | and,or -> | real -> ERR
+                                     | int -> ERR
+                                     | Boolean -> OK
+                                     | INTERVALLE -> ERR
+                                     | Array(Boolean)[int] -> OK
+                                     | Array_ -> ERR
+                         |
+               | INTERVALLE | =,<,>,/=,<=,>= | real -> OK
+                                             | int -> OK
+                                             | Boolean -> ERR
+                                             | INTERVALLE -> OK
+                                             | Array(real,int,INTERVALLE)[int] -> OK
+                                             | Array_ -> ERR
+                            | +,-,*,/,and,or,div,mod,[] -> ERR
+               | Array(int,real,INTERVALLE)[int] -> | =,<,>,/=,<=,>= | real -> OK
+                                                                     | int -> OK
+                                                                     | Boolean -> ERR
+                                                                     | INTERVALLE -> OK
+                                                                     | Array(real,int,INTERVALLE)[int] -> OK
+                                                                     | Array_ -> ERR
+                                                    | +,-,*,/,and,or,div,mod -> ERR
+               | Array(Boolean)[int] -> | =,<,>,/=,<=,>= | real -> ERR
+                                                         | int -> OK
+                                                         | Boolean -> OK
+                                                         | INTERVALLE -> ERR
+                                                         | Array(Boolean)[int] -> OK
+                                                         | Array_ -> ERR
+                                        | +,-,*,/,and,or,div,mod -> ERR
+              | Array_ -> ERR
+              | not | real | =,<,>,/=,<=,>= | real -> OK
+                                            | int -> OK
+                                            | Boolean -> ERR
+                                            | INTERVALLE -> OK
+                                            | Array(real,int,INTERVALLE)[int] -> OK
+                                            | Array_ -> ERR
+                           | +,-,*,/,and,or,div,mod,[] -> ERR
+                    | int | =,<,>,/=,<=,>= | real -> OK
+                                           | int -> OK
+                                           | Boolean -> ERR
+                                           | INTERVALLE -> OK
+                                           | Array(real,int,INTERVALLE)[int] -> OK
+                                           | Array_ -> OK
+                           | +,-,*,/,and,or,div,mod -> ERR
+                    | Boolean | and,or -> | real -> ERR
+                                          | int -> ERR
+                                          | Boolean -> OK
+                                          | INTERVALLE -> ERR
+                                          | Array(Boolean)[int] -> OK
+                                          | Array_ -> ERR
+                              |
+                    | INTERVALLE | =,<,>,/=,<=,>= | real -> OK
+                                                  | int -> OK
+                                                  | Boolean -> ERR
+                                                  | INTERVALLE -> OK
+                                                  | Array(real,int,INTERVALLE)[int] -> OK
+                                                  | Array_ -> ERR
+                                 | +,-,*,/,and,or,div,mod,[] -> ERR
+                    | Array(int,real,INTERVALLE)[int] -> | =,<,>,/=,<=,>= | real -> OK
+                                                                          | int -> OK
+                                                                          | Boolean -> ERR
+                                                                          | INTERVALLE -> OK
+                                                                          | Array(real,int,INTERVALLE)[int] -> OK
+                                                                          | Array_ -> ERR
+                                                         | +,-,*,/,and,or,div,mod -> ERR
+                    | Array(Boolean)[int] -> | =,<,>,/=,<=,>= | real -> ERR
+                                                              | int -> OK
+                                                              | Boolean -> OK
+                                                              | INTERVALLE -> ERR
+                                                              | Array(Boolean)[int] -> OK
+                                                              | Array_ -> ERR
+                                             | +,-,*,/,and,or,div,mod -> ERR
+                    | Array_ -> ERR
+              | and,or,div,mod,=,<,>,/=,<=,>=,[],+,-,*,/ -> ERR
+
+    INTERVALLE := | real -> ERR
+                  | int,INTERVALLE | +,-,* | int -> OK
+                                           | real -> ERR
+                                           | Boolean -> ERR
+                                           | INTERVALLE -> OK
+                                           | Array(int,INTERVALLE)[int] -> OK
+                                           | Array_ -> ERR
+                                   | / -> ERR
+                                   | and,or,not,=,<,>,/=,<=,>=,[] -> ERR
+                                   | div,mod -> | int -> OK
+                                                | real -> ERR
+                                                | Boolean -> ERR
+                                                | INTERVALLE -> OK
+                                                | Array(int,INTERVALLE)[int] -> OK
+                                                | Array_ -> ERR
+                  | Boolean -> ERR
+                  | Array(int,INTERVALLE)[int] - > | +,-,* | int -> OK
+                                                           | real -> ERR
+                                                           | Boolean -> ERR
+                                                           | INTERVALLE -> OK
+                                                           | Array(int,INTERVALLE)[int] -> OK
+                                                           | Array_ -> ERR
+                                                   | / -> ERR
+                                                   | and,or,not,=,<,>,/=,<=,>=,[] -> ERR
+                                                   | div,mod -> | int -> OK
+                                                                | real -> ERR
+                                                                | Boolean -> ERR
+                                                                | INTERVALLE -> OK
+                                                                | Array(int,INTERVALLE)[int] -> OK
+                                                                | Array_ -> ERR
+                  | Array_ -> ERR
+                  |+,- -> | int,INTERVALLE -> OK
+                          | real -> ERR
+                          | Boolean -> ERR
+                          | Array(int,INTERVALLE)[int] -> OK
+                          | Array_ -> ERR
+                  | and,or,not,div,mod,=,<,>,/=,<=,>=,[] -> ERR
+
+    Array(int,INTERVALLE)[int] := int,INTERVALLE
+
+    Array(real)[int] := int,INTERVALLE,real
+
+    Array(Boolean)[int] := Boolean
+
+    

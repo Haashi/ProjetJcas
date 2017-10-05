@@ -8,16 +8,18 @@
 // A COMPLETER, avec les différents types d'erreur et les messages d'erreurs 
 // correspondants
 // -------------------------------------------------------------------------
-//ErreurContext.ErreurOperationInvalide.leverErreurContext("kikoo", 506984); utilisation
+//ErreurContext.ErreurAffectationInvalide.leverErreurContext("kikoo", 506984); utilisation
 package fr.esisar.compilation.verif;
 
 public enum ErreurContext 
 {
    
    ErreurNonRepertoriee,
-   ErreurOperationInvalide,
-   ErreurMauvaiseDeclaration,
-   ErreurIdentificateurNonDeclare;
+   ErreurAffectationInvalide,
+   ErreurTypeInconnu,
+   ErreurIdentificateurNonDeclare,
+   ErreurIdentificateurDejaDeclare,
+   ;
    
    
 
@@ -26,15 +28,17 @@ public enum ErreurContext
       System.err.println("Erreur contextuelle : ");
       switch (this) 
       {
-      	case ErreurOperationInvalide:
-      		System.err.print("Operation invalide " + s);
+      	case ErreurAffectationInvalide:
+      		System.err.println("Affectation invalide " + s);
       		break;
-      	case ErreurMauvaiseDeclaration:
-      		System.err.println("Declaration incorrecte " + s);
+      	case ErreurTypeInconnu:
+      		System.err.println("Type Inconnu " + s);
       		break;
       	case ErreurIdentificateurNonDeclare:
-      		System.err.print("Variable non declare " + s);
+      		System.err.println("Variable non declaree " + s);
       		break;
+      	case ErreurIdentificateurDejaDeclare:
+      		System.err.println("Identificateur deja declare" + s);
          default:
             System.err.print("Non repertoriee");
       }

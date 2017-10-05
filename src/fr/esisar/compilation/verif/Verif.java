@@ -48,6 +48,7 @@ public class Verif {
     * PROGRAMME
     **************************************************************************/
    private void verifier_PROGRAMME(Arbre a) throws ErreurVerif {
+	  
       initialiserEnv();
       verifier_LISTE_DECL(a.getFils1());
       verifier_LISTE_INST(a.getFils2());
@@ -57,7 +58,7 @@ public class Verif {
     * LISTE_DECL
     **************************************************************************/
    private void verifier_LISTE_DECL(Arbre a) throws ErreurVerif {
-      // A COMPLETER
+	   // A COMPLETER
    }
 
    /**************************************************************************
