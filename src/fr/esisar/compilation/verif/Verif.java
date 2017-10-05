@@ -97,22 +97,9 @@ public class Verif {
 	   
    }
    
-   /**************************************************************************
-    * DECL
-    **************************************************************************/
-   
    private void verifier_DECL(Arbre a) throws ErreurVerif{
 	   // A COMPLETER
-
-	   
 	   verifier_LISTE_IDF_Decl(a.getFils1(),verifier_TYPE(a.getFils2()));
-   }
-   
-   /**************************************************************************
-    * LISTE_INST
-    **************************************************************************/
-   private void verifier_LISTE_INST(Arbre a) throws ErreurVerif {
-      // A COMPLETER
    }
    
    private void verifier_LISTE_IDF_Decl(Arbre a, Type type) throws ErreurVerif {
@@ -125,7 +112,7 @@ public class Verif {
 	   		break;
 	   	default:
 	   		throw new ErreurInterneVerif(
-	   				"Arbre incorrect dans verifier_LISTE_DECL");
+	   				"Arbre incorrect dans verifier_LISTE_IDF_Decl");
 	   }
    }
    
@@ -154,7 +141,7 @@ public class Verif {
 	   		type = Type.creationArray(verifier_TYPE(a.getFils1()), verifier_TYPE(a.getFils2()));
 	   		break;
 	   	default:
-	   		break;
+	   		throw new ErreurVerif();
 	   }
 	   return type;
    }
@@ -168,6 +155,80 @@ public class Verif {
 	   Decor decor = new Decor(def);
 	   a.setDecor(decor);
 	   return def.getType();
+   }
+   
+   /**************************************************************************
+    * LISTE_INST
+    **************************************************************************/
+   private void verifier_LISTE_INST(Arbre a) throws ErreurVerif {
+	   switch(a.getNoeud()) {
+	   	case ListeInst:
+	   		verifier_LISTE_INST(a.getFils1());
+	   		verifier_INST(a.getFils2());
+	   		break;
+	   	case Vide:
+	   		break;
+	   	default:
+	   		throw new ErreurInterneVerif(
+	   				"Arbre incorrect dans verifier_LISTE_INST");
+	   }
+   }
+   
+   private void verifier_INST(Arbre a) throws ErreurVerif {
+	   switch(a.getNoeud()) {
+	   	case Vide:
+	   		break;
+	   	case Affect:
+	   		Type t1 = verifier_IDF_Inst(a.getFils1());
+	   		Type t2 = verifier_EXP(a.getFils2());
+	   		ResultatAffectCompatible res = ReglesTypage.affectCompatible(t1,t2);
+	   		if(res.getOk() && res.getConv2()) {
+	   			Arbre conv = Arbre.creation0(Noeud.Conversion, a.getNumLigne());
+	   			conv.setFils1(a.getFils1());
+	   			a.setFils1(conv);
+	   		}
+	   		else if(!res.getOk()) {
+	   			throw new ErreurVerif();
+	   		}
+	   		break;
+	   	default:
+	   		break;
+	   }
+   }
+   
+   private Type verifier_IDF_Inst(Arbre a) throws ErreurVerif{
+	   Defn def = env.chercher(a.getChaine());
+	   if(def==null) {
+		   throw new ErreurVerif();
+	   }
+	   return def.getType();
+   }
+   
+   private Type verifier_EXP(Arbre a) throws ErreurVerif{
+	   switch(a.getNoeud()) {
+	   	case Vide:
+	   		break;
+	   	case Plus:
+	   		Type t1 = verifier_EXP(a.getFils1());
+	   		Type t2 = verifier_EXP(a.getFils2());
+	   		ResultatBinaireCompatible res = ReglesTypage.binaireCompatible(Noeud.Plus, t1, t2);
+	   		if(res.getOk() && res.getConv2()) {
+	   			Arbre conv = Arbre.creation0(Noeud.Conversion, a.getNumLigne());
+	   			conv.setFils1(a.getFils2());
+	   			a.setFils2(conv);
+	   		}
+	   		if(res.getOk() && res.getConv1()) {
+	   			Arbre conv = Arbre.creation0(Noeud.Conversion, a.getNumLigne());
+	   			conv.setFils1(a.getFils1());
+	   			a.setFils1(conv);
+	   		}
+	   		else if(!res.getOk()) {
+	   			throw new ErreurVerif();
+	   		}
+	   		return res.getTypeRes();
+	   }
+	   
+	   
    }
    // ------------------------------------------------------------------------
    // COMPLETER les operations de vérifications et de décoration pour toutes 

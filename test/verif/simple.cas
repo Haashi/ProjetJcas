@@ -1,6 +1,8 @@
 program
-a,b,c:array[1..6] of array[2..7] of integer;
+a:array[1..6] of integer;
+c:array[1..2] of a;
 begin
    null;
+   write("bite");
 end.
 
