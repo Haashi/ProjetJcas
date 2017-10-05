@@ -64,7 +64,7 @@ public class ReglesTypage {
 	   Boolean conv1=false;
 	   Boolean conv2=false;
 	   Boolean ok = false;
-	   Type TypeRes;
+	   Type TypeRes=Type.Boolean; //ATTENTION INITIALISATION NON SURE
 	   switch(noeud) {
 	   	  case Ou:
 	   	  case Et:
@@ -72,6 +72,7 @@ public class ReglesTypage {
 	   			  ok=true;
 	   			  TypeRes=Type.Boolean;
 	   		  }
+	   		  break;
 		   case Egal:
 		   case Inf:
 		   case Sup:
@@ -139,8 +140,12 @@ public class ReglesTypage {
 							   ok=true;
 							   TypeRes=Type.Integer;
 							   break;
+							default:
+								break;
 					   }
 					   break;
+					default:
+							break;
 			   }
 			   break;
 		   case Quotient :
@@ -189,10 +194,16 @@ public class ReglesTypage {
 					 TypeRes=t1.getElement();
 			     }
 				 break;
-		   default : 
-			   	return null;
+		   default : // Inserer une exception adaptée
+			   	throw new ErreurReglesTypage();
+			   	
 		   }
-	      
+	   ResultatBinaireCompatible Bin= new ResultatBinaireCompatible();
+	   Bin.setConv1(conv1);
+	   Bin.setConv2(conv2);
+	   Bin.setOk(ok);
+	   Bin.setTypeRes(TypeRes);
+	   return Bin;  
    }
 
    /**
@@ -201,7 +212,39 @@ public class ReglesTypage {
     */
    static ResultatUnaireCompatible unaireCompatible
          (Noeud noeud, Type t) {
-      return null;
+	    Boolean ok = false;
+	    Type TypeRes=Type.Boolean;
+	    switch (noeud) {
+		    case Non:
+		    	if(t.getNature()==NatureType.Boolean) {
+		    		ok=true;
+		    		TypeRes=Type.Boolean;
+		    	}
+		    	break;
+		    case Increment :
+		    case Decrement :
+		    	switch(t.getNature()) {
+		    	case Real :
+		    		ok =true;
+		    		TypeRes=Type.Real;
+		    		break;
+		    	case Interval :
+		    		ok=true;
+		    		TypeRes=Type.Integer;
+		    		break;
+		    	default :
+		    		break;
+		    	}
+		    	break;
+		    
+		    default:
+		    	break;
+	    }
+	    ResultatUnaireCompatible Unaire = new ResultatUnaireCompatible();
+	    Unaire.setOk(ok);
+	    Unaire.setTypeRes(TypeRes);
+	    return Unaire;
+  
    }
          
 }

@@ -232,6 +232,7 @@ public class Type {
          case Array:
             s = s + "(" + getIndice() + ", " + getElement() + ")";
          break;
+         
       }
       return s;
    }
