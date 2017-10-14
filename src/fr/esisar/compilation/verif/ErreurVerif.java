@@ -7,6 +7,9 @@ package fr.esisar.compilation.verif;
 
 public class ErreurVerif extends Exception {
 
+		public ErreurVerif() {
+			System.out.println("Verification terminée, erreur lors de la verification \n ##########################################");
+		}
 }
 
 
