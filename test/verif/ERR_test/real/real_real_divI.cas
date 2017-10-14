@@ -1,0 +1,6 @@
+program
+a:real;
+b:real;
+begin
+a := b div c;
+end.

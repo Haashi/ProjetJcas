@@ -1,0 +1,6 @@
+program
+a:real;
+b:real;
+begin
+a := b < c;
+end.

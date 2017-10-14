@@ -1,0 +1,7 @@
+program
+a:boolean;
+b:boolean;
+c:array[1 .. 5] of integer;
+begin
+a := not b and c;
+end.
