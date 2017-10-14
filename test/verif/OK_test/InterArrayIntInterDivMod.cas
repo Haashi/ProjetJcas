@@ -1,0 +1,25 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+begin
+	j:= ai[3] div i;
+	j:= ai[3] div j;
+	j:= ai[3] div ai[1];
+	j:= ai[3] div aj[1];
+ 	j:= aj[2] div i;
+	j:= aj[2] div j;
+	j:= aj[2] div ai[1];
+	j:= aj[2] div aj[1];
+	j:= ai[3] mod i;
+	j:= ai[3] mod j;
+	j:= ai[3] mod ai[1];
+	j:= ai[3] mod aj[1];
+ 	j:= aj[2] mod i;
+	j:= aj[2] mod j;
+	j:= aj[2] mod ai[1];
+	j:= aj[2] mod aj[1];
+end.

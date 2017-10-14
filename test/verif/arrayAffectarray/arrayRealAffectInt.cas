@@ -1,0 +1,6 @@
+program
+	r: Array [1..5] of real;
+	f: int;
+begin
+	r := f;
+end.

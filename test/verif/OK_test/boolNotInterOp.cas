@@ -1,0 +1,46 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	b:boolean;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+begin
+	b := not j = r;
+	b := not j = i;
+	b := not j = j;
+	b := not j = ai[1];
+	b := not j = aj[1];
+	b := not j = ar[1];
+	b := not j < r;
+	b := not j < i;
+	b := not j < j;
+	b := not j < ai[1];
+	b := not j < aj[1];
+	b := not j < ar[1];
+	b := not j > r;
+	b := not j > i;
+	b := not j > j;
+	b := not j > ai[1];
+	b := not j > aj[1];
+	b := not j > ar[1];
+	b := not j /= r;
+	b := not j /= i;
+	b := not j /= j;
+	b := not j /= ai[1];
+	b := not j /= aj[1];
+	b := not j /= ar[1];
+	b := not j <= r;
+	b := not j <= i;
+	b := not j <= j;
+	b := not j <= ai[1];
+	b := not j <= aj[1];
+	b := not j <= ar[1];
+	b := not j >= r;
+	b := not j >= i;
+	b := not j >= j;
+	b := not j >= ai[1];
+	b := not j >= aj[1];
+	b := not j >= ar[1];
+end.

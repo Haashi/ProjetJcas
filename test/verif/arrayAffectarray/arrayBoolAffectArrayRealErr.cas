@@ -1,0 +1,6 @@
+program
+	r: Array [1..5] of boolean;
+	f: Array [1..8] of real;
+begin
+	r := f;
+end.

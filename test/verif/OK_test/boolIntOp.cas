@@ -1,0 +1,46 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	b:boolean;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+begin
+	b := i = r;
+	b := i = i;
+	b := i = j;
+	b := i = ai[1];
+	b := i = aj[1];
+	b := i = ar[1];
+	b := i < r;
+	b := i < i;
+	b := i < j;
+	b := i < ai[1];
+	b := i < aj[1];
+	b := i < ar[1];
+	b := i > r;
+	b := i > i;
+	b := i > j;
+	b := i > ai[1];
+	b := i > aj[1];
+	b := i > ar[1];
+	b := i /= r;
+	b := i /= i;
+	b := i /= j;
+	b := i /= ai[1];
+	b := i /= aj[1];
+	b := i /= ar[1];
+	b := i <= r;
+	b := i <= i;
+	b := i <= j;
+	b := i <= ai[1];
+	b := i <= aj[1];
+	b := i <= ar[1];
+	b := i >= r;
+	b := i >= i;
+	b := i >= j;
+	b := i >= ai[1];
+	b := i >= aj[1];
+	b := i >= ar[1];
+end.

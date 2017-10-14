@@ -1,0 +1,17 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	b:boolean;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+	ab:Array [1..5] of boolean;
+begin
+	b := b and b;
+	b := b or b;
+	b := ab[1] and ab[1];
+	b := ab[1] or ab[1];
+	b := ab[1] and b;
+	b := ab[1] or  b;
+end.
