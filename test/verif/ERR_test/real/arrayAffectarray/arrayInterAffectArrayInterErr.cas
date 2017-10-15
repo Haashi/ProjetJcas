@@ -1,6 +1,0 @@
-program
-	r: Array [1..5] of 1..5;
-	f: Array [1..10] of 1..10 ;
-begin
-	r := f;
-end.

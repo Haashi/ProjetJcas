@@ -1,6 +1,0 @@
-program
-a:real;
-b:real;
-begin
-a := b not c;
-end.

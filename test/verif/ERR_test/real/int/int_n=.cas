@@ -1,5 +1,0 @@
-program
-a:integer;
-begin
-a := /=;
-end.

@@ -1,6 +1,0 @@
-program
-a:integer;
-b:array[1 .. 5] of integer;
-begin
-a := b;
-end.

@@ -1,7 +1,0 @@
-program
-a:real;
-b:integer;
-c:real;
-begin
-a := b not c;
-end.

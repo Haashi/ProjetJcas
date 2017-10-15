@@ -1,5 +1,0 @@
-program
-a:real;
-begin
-a := >=
-end.

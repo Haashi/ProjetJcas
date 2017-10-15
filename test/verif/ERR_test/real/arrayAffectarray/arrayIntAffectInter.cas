@@ -1,6 +1,0 @@
-program
-	r: Array [1..5] of int;
-	f: 1..5;
-begin
-	r := f;
-end.

@@ -1,7 +1,0 @@
-program
-a:boolean;
-b:boolean;
-c:integer;
-begin
-a := b = c;
-end.

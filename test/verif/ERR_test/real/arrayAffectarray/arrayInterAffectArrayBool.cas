@@ -1,6 +1,0 @@
-program
-	r: Array [1..5] of 1..5;
-	f: Array [1..5] of boolean;
-begin
-	r := f;
-end.

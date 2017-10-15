@@ -1,6 +1,0 @@
-program
-a:integer;
-b:boolean;
-begin
-a := + b;
-end.

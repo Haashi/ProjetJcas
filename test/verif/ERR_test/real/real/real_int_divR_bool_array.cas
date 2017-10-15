@@ -1,7 +1,0 @@
-program
-a:real;
-b:integer;
-c:array[1 .. 5] of boolean;
-begin
-a := b / c;
-end.

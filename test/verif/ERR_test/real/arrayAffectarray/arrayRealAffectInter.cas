@@ -1,6 +1,0 @@
-program
-	r: Array [1..5] of real;
-	f: 1..13;
-begin
-	r := f;
-end.

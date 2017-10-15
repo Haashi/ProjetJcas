@@ -1,7 +1,0 @@
-program
-	a: Array [1..5] of Array [1..5] of integer;
-	b: Array [1..5] of Array [1..5] of Array[1..5] of integer;
-	f: Array [1..5] of Array [1..5] of Array[1..5] of Array[1..5] of Array [1..5] of Array[1..5] of real;
-begin
-	f[1][2][3][4][5] = a[1][2] + b[1][2][3];
-end. 

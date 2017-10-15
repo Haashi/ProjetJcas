@@ -1,7 +1,0 @@
-program
-a:boolean;
-b:real;
-c:array[1 .. 5] of boolean;
-begin
-a := not b < c;
-end.

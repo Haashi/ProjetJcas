@@ -1,7 +1,0 @@
-program
-a:boolean;
-b:integer;
-c:array[1 ..5] of boolean;
-begin
-a := not b /= c;
-end.

@@ -1,7 +1,0 @@
-program
-a:real;
-b:real;
-c:array[1 .. 5] of real;
-begin
-a := b - c;
-end.
