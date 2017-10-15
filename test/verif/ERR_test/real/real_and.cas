@@ -1,5 +1,5 @@
 program
 a:real;
 begin
-a := and
+a := and ;
 end.

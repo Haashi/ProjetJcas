@@ -2,5 +2,5 @@ program
 a:real;
 b:integer;
 begin
-a := [b]
+a := [b] ;
 end.

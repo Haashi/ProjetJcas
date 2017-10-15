@@ -1,0 +1,6 @@
+program
+a:integer;
+b:real;
+begin
+a := b;
+end.

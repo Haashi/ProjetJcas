@@ -1,0 +1,7 @@
+program
+a:integer;
+b:integer;
+c:array[1 .. 5] of real;
+begin
+a := b mod c;
+end.

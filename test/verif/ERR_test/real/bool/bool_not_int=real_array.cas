@@ -1,0 +1,7 @@
+program
+a:boolean;
+b:integer;
+c:array[1 ..5] of real;
+begin
+a := not b = c;
+end.

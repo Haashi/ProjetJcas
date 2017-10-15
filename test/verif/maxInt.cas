@@ -1,0 +1,12 @@
+program
+	i : integer;
+	j : 1..20;
+	t : Array[1..5] of integer;
+begin
+	j := 13 ;
+	i := max_int;
+	if i = max_int then
+		 i := i -1;
+	end;
+	t[1] := j;
+end.

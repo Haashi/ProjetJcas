@@ -1,0 +1,7 @@
+program
+a:boolean;
+b:boolean;
+c:real;
+begin
+a := not b or c;
+end.

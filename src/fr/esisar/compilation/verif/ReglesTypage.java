@@ -55,7 +55,7 @@ public class ReglesTypage  {
 					   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"affectation");
 				}
 			   break;
-		 default: System.out.println("coucou");
+		 default: //System.out.println("coucou");
 			 throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"affectation");
 			 
 	  }
@@ -78,7 +78,7 @@ public class ReglesTypage  {
 	   Boolean conv2=false;
 	   Boolean ok = false;
 	   Type TypeRes=Type.Boolean; //ATTENTION INITIALISATION NON SURE
-	   System.out.println("Bonjour  " +t1.getNature()+ t2.getNature());
+	   //System.out.println("Bonjour  " +t1.getNature()+ t2.getNature());
 	   switch(noeud) {
 	   	  case Ou:
 	   	  case Et:

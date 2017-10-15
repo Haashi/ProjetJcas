@@ -1,0 +1,6 @@
+program
+a:real;
+b:boolean;
+begin
+a := - b;
+end.
