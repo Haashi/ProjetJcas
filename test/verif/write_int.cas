@@ -1,0 +1,5 @@
+program
+i:integer;
+begin
+write(i);
+end.

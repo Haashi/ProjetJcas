@@ -1,0 +1,7 @@
+program
+i:integer;
+begin
+while i do
+  null;
+end;
+end.

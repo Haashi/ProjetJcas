@@ -31,7 +31,9 @@ public class ReglesTypage  {
 					   ok=true;
 					   	conv2=true;
 					   	break;
-				   default : throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"affectation");
+				   default : 
+					   ErreurContext.ErreurAffectationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString(), Numligne);
+					   break;
 			   }
 			   break;
 			   
@@ -39,24 +41,23 @@ public class ReglesTypage  {
 			  
 			   switch(t2.getNature()) { 
 				   case  Array:
-					   System.out.println("BITT"+ t1.getIndice().getNature());
-					   if(t1.getIndice().getNature()==NatureType.Interval && t1.getIndice().getNature()==t2.getIndice().getNature() && t1.getIndice().getBorneInf()== t2.getIndice().getBorneInf() && t2.getIndice().getBorneSup() == t2.getIndice().getBorneSup()) {
+					   if(t1.getIndice().getNature()==NatureType.Interval && t1.getIndice().getNature()==t2.getIndice().getNature() && t1.getIndice().getBorneInf()== t2.getIndice().getBorneInf() && t1.getIndice().getBorneSup() == t2.getIndice().getBorneSup()) {
 						   ResultatAffectCompatible res1 =affectCompatible(t1.getElement(),t2.getElement(),Numligne);
 						   
-						   if(res1.getOk())
 								   ok = true;
 						   if(res1.getConv2())
 							   	    conv2=true;
 					   }
 					   else {
-						   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"affectation");}
+						   ErreurContext.ErreurAffectationInvalide.leverErreurContext("Les tableaux n'ont pas les même bornes", Numligne);}
 					   break;
 				   default : 
-					   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"affectation");
-				}
+					   ErreurContext.ErreurAffectationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString(), Numligne);;
+					   break;
+			   }
 			   break;
-		 default: //System.out.println("coucou");
-			 throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"affectation");
+		 default:
+			 ErreurContext.ErreurAffectationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString(), Numligne);
 			 
 	  }
 	  }
@@ -78,7 +79,6 @@ public class ReglesTypage  {
 	   Boolean conv2=false;
 	   Boolean ok = false;
 	   Type TypeRes=Type.Boolean; //ATTENTION INITIALISATION NON SURE
-	   //System.out.println("Bonjour  " +t1.getNature()+ t2.getNature());
 	   switch(noeud) {
 	   	  case Ou:
 	   	  case Et:
@@ -87,7 +87,7 @@ public class ReglesTypage  {
 	   			  TypeRes=Type.Boolean;
 	   		  }
 	   		  else
-	   			throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération "+noeud.toString());
+	   			ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);;
 	   		  break;
 		   case Egal:
 		   case Inf:
@@ -108,7 +108,7 @@ public class ReglesTypage  {
 							   TypeRes=Type.Boolean;
 							   break;
 						   default:
-							   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération "+noeud.toString());
+							   ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);;
 					   }
 					   break;
 				   case Real:
@@ -123,11 +123,12 @@ public class ReglesTypage  {
 							   TypeRes=Type.Boolean;
 							   break;
 							default :
-								throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération "+noeud.toString());
+								ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);;
 					   }
 					   break;
 				   default:
-					   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération "+noeud.toString());
+					   ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);;
+					   break;
 			   }
 			   break;
 		   case Plus:
@@ -146,7 +147,7 @@ public class ReglesTypage  {
 							   TypeRes=Type.Real;
 							   break;
 						   default :
-							   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération "+noeud.toString());
+							   ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);
 					   }
 					   break;
 				   case Interval:
@@ -161,10 +162,11 @@ public class ReglesTypage  {
 							   TypeRes=Type.Integer;
 							   break;
 							default:
-								throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération "+noeud.toString());
+								ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);
 					   }
 					   break;
 					default:
+						ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);;
 							break;
 			   }
 			   break;
@@ -173,6 +175,9 @@ public class ReglesTypage  {
 			   if(t1.getNature()==NatureType.Interval && t2.getNature()==NatureType.Interval) {
 				   ok=true;
 				   TypeRes=Type.Integer;
+			   }
+			   else{
+				   ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);
 			   }
 			   break;
 		   case DivReel :
@@ -187,8 +192,9 @@ public class ReglesTypage  {
 							 ok=true;
 							 conv1=true;
 							 TypeRes=Type.Real;
+							 break;
 						 default:
-							 throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération binaire");
+							 ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);
 					 }
 					 break;
 				  case Real:
@@ -203,12 +209,12 @@ public class ReglesTypage  {
 							     TypeRes=Type.Real;
 							     break;
 						   default:
-							   throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération binaire");
+							   ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);
 							   
 					  }
 					  break;
 				  default :
-					  throw new ErreurReglesTypage(t1.getNature().toString(),t2.getNature().toString(),Numligne,"opération binaire");
+					  ErreurContext.ErreurOperationInvalide.leverErreurContext(t1.getNature().toString()+" incompatible avec "+t2.getNature().toString()+" pour l'opération "+noeud, Numligne);
 				     
 			  }
 			  break;
@@ -220,7 +226,7 @@ public class ReglesTypage  {
 				 break;
 		  
 		   default : // Inserer une exception adaptée
-			   throw new ErreurVerif();
+			   throw new ErreurReglesTypage("Erreur interne dans binaireCompatible");
 			   	
 		   }
 	   ResultatBinaireCompatible Bin= new ResultatBinaireCompatible();
@@ -234,34 +240,30 @@ public class ReglesTypage  {
    /**
     * Teste si le type t est compatible pour l'opération binaire représentée 
     * dans noeud.
+ * @throws ErreurVerif 
     */
    static ResultatBinaireCompatible VerifFor // Permet de vérifier les opérations de décrémentation et incrémentation
-   (Noeud noeud,Type t1,Type t2, Type t3,int Numligne) throws ErreurReglesTypage,ErreurVerif{
+   (Noeud noeud,Type t1,Type t2, Type t3,int Numligne) throws ErreurReglesTypage, ErreurVerif{
 	   Boolean ok = false;
-	   Boolean conv1=false;
-	   Boolean conv2=false;
 
-	   Type TypeRes=Type.Boolean;
+
 	   switch(noeud) {
 	   		case Increment:
 	   		case Decrement:
 	   			if (t1.getNature()==NatureType.Interval && t1.getNature()==t2.getNature() && t2.getNature()==t3.getNature()) {
 	   				ok=true;
-	   				TypeRes=Type.Integer;
 	   			}
 	   			else {
 	   				if(!(t1.getNature()==NatureType.Interval))
-	   					throw new ErreurReglesTypage(t1.getNature().toString(),Numligne,1);
+	   					ErreurContext.ErreurTypeForVariable.leverErreurContext("", Numligne);
 	   				else
-	   					throw new ErreurReglesTypage(t1.getNature().toString(),Numligne,2);
+	   					ErreurContext.ErreurTypeForBorne.leverErreurContext("", Numligne);
 	   			}
 	   			break;
 	   		default:
-	   			break;
+	   			throw new ErreurReglesTypage("Erreur interne dans VerifFor");
 	   }
 	   ResultatBinaireCompatible Bin = new ResultatBinaireCompatible();
-	   Bin.setConv1(conv1);
-	   Bin.setConv2(conv2);
 	   Bin.setOk(ok);
 	   return Bin;
 	   
@@ -277,7 +279,7 @@ public class ReglesTypage  {
 		    		TypeRes=Type.Boolean;
 		    	}
 		    	else {
-		    		throw new ErreurReglesTypage(t.getNature().toString(),Numligne,"Non");
+		    		ErreurContext.ErreurOperationInvalide.leverErreurContext(t.getNature().toString()+" incompatible pour l'opération "+noeud, Numligne);
 		    	}
 		    	break;
 		    case MoinsUnaire :
@@ -292,13 +294,13 @@ public class ReglesTypage  {
 		    		TypeRes=Type.Integer;
 		    		break;
 		    	default :
-		    		throw new ErreurReglesTypage(t.getNature().toString(),Numligne,noeud.toString());
+		    		ErreurContext.ErreurOperationInvalide.leverErreurContext(t.getNature().toString()+" incompatible pour l'opération "+noeud, Numligne);
 		    		
 		    	}
 		    	break;
 		    
 		    default:
-		    	break;
+		    	throw new ErreurReglesTypage("Erreur interne dans unaireCompatible");
 	    }
 	    ResultatUnaireCompatible Unaire = new ResultatUnaireCompatible();
 	    Unaire.setOk(ok);

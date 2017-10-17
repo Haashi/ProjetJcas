@@ -1,0 +1,8 @@
+program
+i:integer;
+j:integer;
+begin
+while (i=j) do
+  null;
+end;
+end.

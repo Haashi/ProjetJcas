@@ -1,0 +1,5 @@
+program
+i:boolean;
+begin
+read(i);
+end.

@@ -1,6 +1,6 @@
 program
 	r: Array [1..5] of boolean;
-	f: int;
+	f: integer;
 begin
 	r := f;
 end.

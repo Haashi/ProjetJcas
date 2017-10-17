@@ -22,15 +22,15 @@ public class TestVerif {
       try {
          // Appel de l'analyseur syntaxique et récupération de l'arbre résultat
          Arbre arbre = parser.analyseSyntaxique(args);
-         arbre.afficher(0);
+         //arbre.afficher(0);
          // Décompilation de l'arbre
-         arbre.decompiler(0);
+         //arbre.decompiler(0);
          // On construit un verificateur de passe 2
          Verif passe2 = new Verif();
          passe2.verifierDecorer(arbre); 
-         arbre.afficher(1);
+         //arbre.afficher(1);
          // Décompilation de l'arbre
-         arbre.decompiler(1);
+         //arbre.decompiler(1);
          
       } catch (ErreurLexicale e) {
          // Recuperation de l'exception ErreurLexicale

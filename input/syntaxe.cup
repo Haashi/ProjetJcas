@@ -195,7 +195,14 @@ constante ::= PLUS const:c1
    :}
    |  const:c3
    {:
-      RESULT = Arbre.creationEntier(c3.getEntier(),parser.numLigne());
+  	  if(c3.getNoeud()==Noeud.Ident){
+  	  	if(c3.getChaine().equals("max_int")){
+  	  		RESULT = Arbre.creationEntier(java.lang.Integer.MAX_VALUE,parser.numLigne());
+  	  	}
+  	  }
+  	  else{
+  	  	RESULT = Arbre.creationEntier(c3.getEntier(),parser.numLigne());
+  	  }
    :}
    ;
 

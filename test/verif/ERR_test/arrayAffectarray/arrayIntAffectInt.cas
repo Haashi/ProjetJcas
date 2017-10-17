@@ -1,6 +1,6 @@
 program
-	r: Array [1..5] of int;
-	f: int;
+	r: Array [1..5] of integer;
+	f: integer;
 begin
 	r := f;
 end.

@@ -6,6 +6,7 @@ program
 	ar:Array [1..5] of real;
 	aj:Array [1..5] of 1..13;
 begin
+   r:=8.5;
    r:= i;
    r:= j;
    r := i + i;
