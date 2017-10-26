@@ -1,0 +1,6 @@
+program
+a:boolean;
+b:array[1 .. 5] of real;
+begin
+a := b;
+end.

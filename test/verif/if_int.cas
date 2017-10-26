@@ -1,0 +1,7 @@
+program
+i:integer;
+begin
+if i then
+null;
+end;
+end.

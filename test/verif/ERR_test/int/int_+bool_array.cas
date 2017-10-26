@@ -1,0 +1,6 @@
+program
+a:integer;
+b:array[1 .. 5] of boolean;
+begin
+a := + b;
+end.

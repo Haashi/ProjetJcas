@@ -1,0 +1,7 @@
+program
+a:real;
+b:integer;
+c:array[1 .. 5] of real;
+begin
+a := b + c;
+end.

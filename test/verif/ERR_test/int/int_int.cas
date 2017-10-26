@@ -1,0 +1,7 @@
+program
+a:integer;
+b:integer;
+c:integer;
+begin
+a := b < c;
+end.

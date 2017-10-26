@@ -1,0 +1,7 @@
+program
+a:boolean;
+b:array[1 .. 5] of boolean;
+c:array[1 .. 6] of boolean;
+begin
+a := (b = c);
+end.

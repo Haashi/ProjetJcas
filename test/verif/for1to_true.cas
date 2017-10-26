@@ -1,0 +1,7 @@
+program
+i:integer;
+begin
+for i := 1 to true do
+  null;
+end;
+end.

@@ -1,0 +1,7 @@
+program
+i:integer;
+begin
+for i := 1 downto 5 do
+  null;
+end;
+end.

@@ -12,4 +12,3 @@ do
     echo "Appuyer sur Return"
     read r
 done
-

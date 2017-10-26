@@ -1,0 +1,6 @@
+program
+	r: Array [1..5] of integer;
+	f: boolean;
+begin
+	r := f;
+end.

@@ -1,0 +1,18 @@
+program
+	i: Array [1..5] of integer;
+	i2: Array [1..5] of Array [1..5] of integer;
+	j: Array [1..5] of 1..13;
+	r: Array [1..5] of real;
+	b: Array [1..5] of boolean;
+	f: Array [1..5] of Array [1..5] of real;
+begin
+	r := r;
+	r := i;
+	r := j;
+	r := f[1];
+	i := i;
+	i := j;
+	b := b;
+	j := i;
+	j := j;
+end. 

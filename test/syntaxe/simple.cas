@@ -1,5 +1,5 @@
-
-program 
+program
 begin
-	null; 
+   null;
 end.
+

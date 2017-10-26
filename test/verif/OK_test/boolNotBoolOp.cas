@@ -1,0 +1,17 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	b:boolean;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+	ab:Array [1..5] of boolean;
+begin
+	b := not (b and b);
+	b := not (b or b);
+	b := not (ab[1] and ab[1]);
+	b := not (ab[1] or ab[1]);
+	b := not (ab[1] and b);
+	b := not (ab[1] or  b);
+end.

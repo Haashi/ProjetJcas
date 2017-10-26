@@ -1,0 +1,6 @@
+program
+	a:integer;
+	a:real;
+begin 
+	null;
+end.

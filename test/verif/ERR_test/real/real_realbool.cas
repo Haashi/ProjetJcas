@@ -1,0 +1,7 @@
+program
+a:real;
+b:real;
+c:boolean;
+begin
+a := b * c;
+end.

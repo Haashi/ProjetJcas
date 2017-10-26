@@ -1,0 +1,46 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+begin
+
+   r := ai[1] + i;
+   r := ai[1] + j;
+   r := ai[1] + r;
+   r := ai[1] + ai[i];
+   r := ai[1] + aj[i];
+   r := ai[1] + ar[1];
+   r := ai[1] - i;
+   r := ai[1] - j;
+   r := ai[1] - r;
+   r := ai[1] - ai[i];
+   r := ai[1] - aj[i];
+   r := ai[1] - ar[1];
+   r := ai[1] * i;
+   r := ai[1] * j;
+   r := ai[1] * r;
+   r := ai[1] * ai[i];
+   r := ai[1] * aj[i];
+   r := ai[1] * ar[1];
+   r := aj[1] + i;
+   r := aj[1] + j;
+   r := aj[1] + r;
+   r := aj[1] + ai[i];
+   r := aj[1] + aj[i];
+   r := aj[1] + ar[1];
+   r := aj[1] - i;
+   r := aj[1] - j;
+   r := aj[1] - r;
+   r := aj[1] - ai[i];
+   r := aj[1] - aj[i];
+   r := aj[1] - ar[1];
+   r := aj[1] * i;
+   r := aj[1] * j;
+   r := aj[1] * r;
+   r := aj[1] * ai[i];
+   r := aj[1] * aj[i];
+   r := aj[1] * ar[1];
+end.
