@@ -1,5 +1,5 @@
 program
 begin
-   null;
+   write("Coucou");
 end.
 
