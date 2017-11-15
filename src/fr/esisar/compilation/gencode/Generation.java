@@ -20,19 +20,21 @@ class Generation {
       Arbre previousNode ;
       String chaine;
       Inst inst;
+     
+      Adresse addrStack = new Adresse();
       
       //Appeler le parcours des déclarations en passant la classe qui répertorie les offsets de la pile et la racine arbre
-      parcoursDecl(a);
+      parcoursDecl(currentNode ,addrStack);
+      //addrStack.afficher();
       
-      
-      System.out.println(a.getNoeud());
+      //System.out.println(a.getNoeud());
       previousNode = currentNode;
       currentNode = currentNode.getFils2().getFils2();
-      System.out.println(currentNode.getNoeud());
+      //System.out.println(currentNode.getNoeud());
       
       switch(currentNode.getNoeud())
       {
-      
+      	case Nop:
       	case Vide: break;
     	  
       
@@ -48,6 +50,7 @@ class Generation {
       	default:
       		System.err.println("Unknown node");
       }
+      
       // Fin du programme
       // L'instruction "HALT"
       inst = Inst.creation0(Operation.HALT);
@@ -59,7 +62,7 @@ class Generation {
    }
 	
 	
-	static void parcoursDecl(Arbre a)
+	static void parcoursDecl(Arbre a, Adresse addr)
 	{//Parcours de la liste des déclarations, pour chaque Identificateur on lui associe un offset par rapport à GB pour le placer dans la pile
 		Arbre currentNode = a;
 		Noeud node = currentNode.getNoeud();
@@ -67,38 +70,36 @@ class Generation {
 		//currentNode = currentNode.getFils2();
 		//System.out.println("Hello" + currentNode.getNoeud());
 		
-		if(node == Noeud.Programme)parcoursDecl(currentNode.getFils1());
+		if(node == Noeud.Programme)parcoursDecl(currentNode.getFils1(), addr);
 		else if(node == Noeud.ListeDecl)
 		{
-			parcoursDecl(currentNode.getFils1());
-			parcoursDecl(currentNode.getFils2());
+			parcoursDecl(currentNode.getFils1(), addr);
+			parcoursDecl(currentNode.getFils2(), addr);
 		}
 		else if(node == Noeud.Vide)return;
 		else if(node == Noeud.Decl)
-		{
-			parcoursDecl(currentNode.getFils1());
+		{		
 			if(currentNode.getFils2().getNoeud() == Noeud.Tableau)
 			{
-				ArrayList<String> nom = searchIdent(currentNode.getFils1(), new ArrayList());
-				//ArrayList<Borne> borne = searchBorne(currentNode, new ArrayList());
-				
+				ArrayList<String> nom = searchIdent(currentNode.getFils1(), new ArrayList<String>());
+				ArrayList<Borne> borne = searchBorne(currentNode.getFils2(), new ArrayList<Borne>());
+				Borne arrayBorne [] = new Borne[borne.size()];
+				for(String name : nom)
+				{
+					addr.allouerTableau(name,borne.toArray(arrayBorne));
+				}
 				
 			}
+			else parcoursDecl(currentNode.getFils1(), addr);
 		}
 		else if(node == Noeud.ListeIdent)
 		{
-			parcoursDecl(currentNode.getFils1());
-			parcoursDecl(currentNode.getFils2());
+			parcoursDecl(currentNode.getFils1(), addr);
+			parcoursDecl(currentNode.getFils2(), addr);
 		}
 		else if(node == Noeud.Ident)
 		{
-			//Call stockage de l'ident pour les variables de type boolean, integer, real
-		
-		}
-		else if(node == Noeud.Tableau)
-		{
-			
-			
+			addr.allouer(currentNode.getChaine(), currentNode.getDecor().getDefn().getType());
 		}
 	}
 
@@ -125,18 +126,21 @@ class Generation {
 	{
 		Arbre currentNode = a;
 		Noeud node = currentNode.getNoeud();
+		
 		if(node == Noeud.Tableau)
 		{
-			b.add(new Borne());
 			b = searchBorne(currentNode.getFils1(), b);
 			b = searchBorne(currentNode.getFils2(), b);
+			return(b);
+		}
+		else if (node == Noeud.Intervalle)
+		{
+			b.add(new Borne(currentNode.getFils1().getEntier(), currentNode.getFils2().getEntier()));
 			return(b);
 		}
 		return(b);
 	}
 	
-
-
 }
 
 

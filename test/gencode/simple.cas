@@ -1,4 +1,9 @@
 program
+a,p:integer;
+b:real;
+c:boolean;
+alpha,beta,gamma:Array [1..5] of integer;
+epsilon,zeta,lambda:Array [1..5] of Array [5..10] of Array [10..15] of integer;
 begin
    null;
 end.
