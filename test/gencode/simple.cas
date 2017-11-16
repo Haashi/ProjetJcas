@@ -1,5 +1,5 @@
 program
-a:integer;
+a,p:integer;
 b:real;
 c:boolean;
 alpha,beta:Array [1..5] of integer;
@@ -8,4 +8,8 @@ f:1..13;
 begin
    a := 13;
    b := 1.5;
+   c := false;
+   c := c;
+   p := epsilon[1][5][10];
+   b := b;
 end.

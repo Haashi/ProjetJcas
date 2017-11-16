@@ -1,9 +1,17 @@
 ; ----------------------------------------------------------------------
 ; -----------                      Programme généré par JCasc-----------
 ; ----------------------------------------------------------------------
-   ADDSP #374 
-   LOAD #13, R0 
+   ADDSP #375 
+   LOAD #13.0, R0 
    STORE R0, 1(GB) 
    LOAD #1.5, R0 
+   STORE R0, 3(GB) 
+   LOAD #0, R0 
+   STORE R0, 4(GB) 
+   LOAD 4(GB), R0 
+   STORE R0, 4(GB) 
+   LOAD 15(GB), R0 
    STORE R0, 2(GB) 
+   LOAD 3(GB), R0 
+   STORE R0, 3(GB) 
    HALT 

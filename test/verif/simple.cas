@@ -1,21 +1,14 @@
 program
 a,p:integer;
 b:real;
-c:boolean;
+c,y:boolean;
 d,alpha,beta:Array [1..5] of integer;
 e:Array [1..5] of Array [5..10] of Array [10..15] of integer;
 f: 1..20;
-begin
-	e[1][6][11]:= 13;
-	a := 5;
-	b := 2.0;
-	while a >=1 do 
-		a := a - 1;
-	end;
-	a := 17;
-	c := not true;
-	p := 13 + 7 - 3 * 2;
-	a := p + 1;
-	d[1] := a - 1;
-	d[2] := a + d[3];
+begin	
+	p := 1;
+	p := e[5][9][13];
+	a := d[1];
+	new_line;
+	write("p = ", p);
 end.
