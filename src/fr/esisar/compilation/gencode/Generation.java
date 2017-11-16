@@ -20,19 +20,20 @@ class Generation {
       Arbre previousNode ;
       String chaine;
       Inst inst;
-     
       Adresse addrStack = new Adresse();
       
       //Appeler le parcours des déclarations en passant la classe qui répertorie les offsets de la pile et la racine arbre
       parcoursDecl(currentNode ,addrStack);
+      Prog.ajouter(Inst.creation1(Operation.ADDSP, Operande.creationOpEntier(addrStack.getOffset())));
       //addrStack.afficher();
+      parcoursInst(currentNode.getFils2(), Prog.instance(), addrStack);
       
       //System.out.println(a.getNoeud());
       previousNode = currentNode;
       currentNode = currentNode.getFils2().getFils2();
       //System.out.println(currentNode.getNoeud());
       
-      switch(currentNode.getNoeud())
+     /* switch(currentNode.getNoeud())
       {
       	case Nop:
       	case Vide: break;
@@ -49,7 +50,7 @@ class Generation {
       				
       	default:
       		System.err.println("Unknown node");
-      }
+      }*/
       
       // Fin du programme
       // L'instruction "HALT"
@@ -60,6 +61,86 @@ class Generation {
       // On retourne le programme assembleur généré
       return Prog.instance(); 
    }
+	
+	
+	static void parcoursInst(Arbre a, Prog prog, Adresse addrStack)
+	{
+		Arbre currentNode = a;
+		Noeud node = currentNode.getNoeud();
+		System.out.println("----CouCou ---- ");
+		
+		if(node == Noeud.ListeInst)
+		{
+			parcoursInst(currentNode.getFils1(), prog, addrStack);
+			parcoursInst(currentNode.getFils2(), prog, addrStack);
+		}
+		else if(node == Noeud.Vide)return;
+		else if(node == Noeud.Affect)
+		{
+			if(currentNode.getFils2().getNoeud() == Noeud.Entier || currentNode.getFils2().getNoeud() == Noeud.Reel || currentNode.getFils2().getNoeud() == Noeud.Ident)
+			{
+				directAffect(currentNode, prog, addrStack);
+			}
+			//Get the ident on the left side of the := sign from the stack, first Son 
+			
+			//And call, for the right side of the := sign second Son
+			
+		}
+		
+	}
+	
+	static void directAffect(Arbre a, Prog prog, Adresse addrStack)
+	{//suppose that first son of a is a ident node
+		Arbre currentNode = a; 
+		Noeud node = currentNode.getNoeud();
+		Registre R = Registre.R0;
+		ArrayList<Inst> inst = new ArrayList<Inst>();
+		
+		
+	/*	if (R.estVide())
+		{
+			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(R)));	
+		}
+		Penser au pop */
+		//Case index !!!!
+		if(currentNode.getFils2().getNoeud() == Noeud.Ident)
+		{
+			
+		}
+		else
+		{ //Case Entier or Reel on the right side := 
+			if(currentNode.getFils2().getNoeud() == Noeud.Entier)
+			{
+				int alpha = currentNode.getFils2().getEntier();
+				String ident = currentNode.getFils1().getChaine();
+				int addrOffset = addrStack.chercher(ident);
+				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(alpha), Operande.opDirect(R)));
+				inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(addrOffset, Registre.GB)));
+			}
+			else if(currentNode.getFils2().getNoeud() == Noeud.Reel)
+			{
+				float beta = currentNode.getFils2().getReel();
+				String ident = currentNode.getFils1().getChaine();
+				int addrOffset = addrStack.chercher(ident);
+				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpReel(beta), Operande.opDirect(R)));
+				inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(addrOffset, Registre.GB)));
+			}
+		}
+		
+		ajouterInst(inst, prog);
+		return;
+	}
+	
+	static void ajouterInst(ArrayList<Inst> i, Prog prog)
+	{
+		for(Inst inst : i)
+		{
+			Prog.ajouter(inst);
+		}
+	}
+	
+	
+	
 	
 	
 	static void parcoursDecl(Arbre a, Adresse addr)
@@ -140,7 +221,6 @@ class Generation {
 		}
 		return(b);
 	}
-	
 }
 
 

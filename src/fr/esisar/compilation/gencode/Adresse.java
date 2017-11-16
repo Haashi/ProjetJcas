@@ -45,6 +45,10 @@ public class Adresse {
 	      }
 	   }
 
+	   	public int getOffset()
+	   	{
+	   		return(offset);
+	   	}
 	   	public void allouer(String id,Type type,Borne... borne) {
 	   		if(type.getNature()!=NatureType.Array) {
 	   			offset++;

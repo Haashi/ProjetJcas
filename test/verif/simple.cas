@@ -4,6 +4,18 @@ b:real;
 c:boolean;
 d,alpha,beta:Array [1..5] of integer;
 e:Array [1..5] of Array [5..10] of Array [10..15] of integer;
+f: 1..20;
 begin
-   null;
+	e[1][6][11]:= 13;
+	a := 5;
+	b := 2.0;
+	while a >=1 do 
+		a := a - 1;
+	end;
+	a := 17;
+	c := not true;
+	p := 13 + 7 - 3 * 2;
+	a := p + 1;
+	d[1] := a - 1;
+	d[2] := a + d[3];
 end.
