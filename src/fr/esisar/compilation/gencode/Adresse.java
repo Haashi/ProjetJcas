@@ -24,6 +24,7 @@ public class Adresse {
 	    */
 	   public Adresse() { 
 	      this.Memoire = new Hashtable<String, Integer>();
+	      this.offset=0;
 	   }
 
 	   /**
@@ -91,6 +92,18 @@ public class Adresse {
 		   }
 	      return Memoire.get(s);
 	   }
+	   
+	   public void liberer() {
+		   Enumeration<String> keys = Memoire.keys();
+		     while (keys.hasMoreElements()) {
+		    	String id = keys.nextElement();
+		    	if(Memoire.get(id)==offset) {
+		    		Memoire.remove(id);
+		    		offset--;
+		    		break;
+		    	}
+		     }
+	   }
 	   public void afficher() {
 		     Enumeration<String> keys = Memoire.keys();
 		     while (keys.hasMoreElements()) {
@@ -99,6 +112,10 @@ public class Adresse {
 		        Integer def = Memoire.get(id);
 		        System.out.println(s + def);
 		     }
+	   }
+	   
+	   public int getOffset() {
+		   return this.offset;
 	   }
 	   
 	 

@@ -30,8 +30,8 @@ class Generation {
       	case Ligne: Prog.ajouter(Inst.creation0(Operation.WNL));
       				break;
       	
-      	case Ecriture: inst = Inst.creation1(Operation.WSTR, Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine().substring(1,currentNode.getFils1().getFils2().getChaine().length()-1)));
-      					System.out.println( Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine()));
+      	case Ecriture: inst = Inst.creation1(Operation.WSTR, Operande2.creationOpChaine(currentNode.getFils1().getFils2().getChaine().substring(1,currentNode.getFils1().getFils2().getChaine().length()-1)));
+      					System.out.println( Operande2.creationOpChaine(currentNode.getFils1().getFils2().getChaine()));
       				   Prog.ajouter(inst);
       				   break;
       	
