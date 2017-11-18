@@ -1,14 +1,16 @@
 program
 a,p:integer;
 b:real;
-c,y:boolean;
-d,alpha,beta:Array [1..5] of integer;
-e:Array [1..5] of Array [5..10] of Array [10..15] of integer;
-f: 1..20;
-begin	
-	p := 1;
-	p := e[5][9][13];
-	a := d[1];
-	new_line;
-	write("p = ", p);
+c:boolean;
+alpha:Array [1..5] of integer;
+epsilon:Array [1..5] of Array [5..10] of Array [10..15] of integer;
+f:1..13;	
+begin
+   a := 13;
+   b := 1.5;
+   f := 14;
+   epsilon[1][5][10] := a;
+   write("Hello World",b);
+   write(a);
+   new_line;
 end.

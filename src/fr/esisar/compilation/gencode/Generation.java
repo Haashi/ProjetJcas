@@ -39,10 +39,6 @@ class Generation {
 	
 	static void parcoursInst(Arbre a, Prog prog, Adresse addrStack)
 	{		
-      	/*case Ecriture:  inst = Inst.creation1(Operation.WSTR, Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine().substring(1,currentNode.getFils1().getFils2().getChaine().length()-1)));
-			System.out.println(Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine()));
-			Prog.ajouter(inst);
-			break;*/	
 		switch(a.getNoeud())
 		{
 		case ListeInst : 
@@ -55,6 +51,9 @@ class Generation {
 				directAffect(a, prog, addrStack);
 			}
 			break;
+		case Ecriture :
+			parcoursEcriture(a.getFils1(), prog, addrStack);
+			break;
 		case Ligne : 
 			Prog.ajouter(Inst.creation0(Operation.WNL));
 			break;
@@ -63,6 +62,46 @@ class Generation {
 		default:
 			break;
 		}
+		return;
+	}
+	
+	static void parcoursEcriture(Arbre a, Prog prog, Adresse addrStack )
+	{
+		ArrayList<Inst> inst = new ArrayList<Inst>();
+		String str ;
+		int offset;
+		switch(a.getNoeud())
+		{
+		case ListeExp :
+			parcoursEcriture(a.getFils1(), prog, addrStack);
+			parcoursEcriture(a.getFils2(), prog, addrStack);
+			break;
+		case Chaine :
+			//Here the string we give the string to the instruction
+			str = a.getChaine();
+			str = str.substring(1, str.length()-1);
+			inst.add(Inst.creation1(Operation.WSTR, Operande.creationOpChaine(str)));
+			break;
+		case Ident :
+			//We need to put the integer or real to print in R1 register
+			str = a.getChaine();
+			offset = addrStack.chercher(str);
+			inst.add(Inst.creation2(Operation.LOAD,Operande.creationOpIndirect(offset, Registre.GB),Operande.opDirect(Registre.R1)));
+			if(a.getDecor().getType() == Type.Integer || a.getDecor().getDefn().getType().getNature() == NatureType.Interval)
+			{
+				inst.add(Inst.creation0(Operation.WINT));
+			}
+			else if (a.getDecor().getDefn().getType().getNature() == NatureType.Real)
+			{
+				inst.add(Inst.creation0(Operation.WFLOAT));
+			}
+			break;
+		case Index :
+			break;
+		default :
+			break;
+		}
+		ajouterInst(inst, prog);
 		return;
 	}
 	
@@ -79,8 +118,8 @@ class Generation {
 		//Info from the left side of :=
 		if(currentNode.getFils1().getNoeud() == Noeud.Index)
 		{ //affecting in an array as array[5][6] := something 
-			ident1 = nameArray(currentNode.getFils2());
-			ind = arrayIndices(currentNode.getFils2(), new ArrayList<Integer>());
+			ident1 = nameArray(currentNode.getFils1());
+			ind = arrayIndices(currentNode.getFils1(), new ArrayList<Integer>());
 			indArray = new Integer[ind.size()];
 			offset1 = addrStack.chercher(ident1, ind.toArray(indArray));	
 		}
@@ -103,7 +142,16 @@ class Generation {
 		else if(currentNode.getFils2().getNoeud() == Noeud.Ident)
 		{	//Case a := b 
 			ident2 = currentNode.getFils2().getChaine();
-			NatureType type = currentNode.getFils1().getDecor().getDefn().getType().getNature();
+			NatureType type;
+			if(currentNode.getFils1().getDecor().getType() == Type.Integer)
+			{
+				type = NatureType.Interval;
+			}
+			else
+			{
+				type = currentNode.getFils1().getDecor().getDefn().getType().getNature();
+			}
+			
 			if(type == NatureType.Boolean)
 			{	//Right side is a boolean  -> Convention : Boolean False = 0; and True != 0
 				if(ident2.equals("true"))
@@ -141,7 +189,7 @@ class Generation {
 			if(currentNode.getFils2().getNoeud() == Noeud.Entier)
 			{
 				int alpha = currentNode.getFils2().getEntier();
-				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpReel(alpha), Operande.opDirect(R)));
+				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(alpha), Operande.opDirect(R)));
 			}
 			else if(currentNode.getFils2().getNoeud() == Noeud.Reel)
 			{

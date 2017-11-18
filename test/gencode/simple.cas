@@ -8,8 +8,10 @@ f:1..13;
 begin
    a := 13;
    b := 1.5;
-   c := false;
-   c := c;
-   p := epsilon[1][5][10];
-   b := b;
+   f := 14;
+   epsilon[1][5][10] := a;
+   write("Hello World ",b ,"Coucou");
+   new_line;
+   write(a);
+   new_line;
 end.

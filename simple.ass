@@ -2,16 +2,17 @@
 ; -----------                      Programme généré par JCasc-----------
 ; ----------------------------------------------------------------------
    ADDSP #375 
-   LOAD #13.0, R0 
+   LOAD #13, R0 
    STORE R0, 1(GB) 
    LOAD #1.5, R0 
    STORE R0, 3(GB) 
-   LOAD #0, R0 
-   STORE R0, 4(GB) 
-   LOAD 4(GB), R0 
-   STORE R0, 4(GB) 
-   LOAD 15(GB), R0 
-   STORE R0, 2(GB) 
-   LOAD 3(GB), R0 
-   STORE R0, 3(GB) 
+   LOAD #14, R0 
+   STORE R0, 375(GB) 
+   LOAD 1(GB), R0 
+   STORE R0, 15(GB) 
+   WSTR "Hello World "",b ,""Coucou" 
+   WNL 
+   LOAD 1(GB), R1 
+   WINT 
+   WNL 
    HALT 
