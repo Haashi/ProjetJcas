@@ -19,27 +19,12 @@ class Generation {
       Arbre currentNode = a; 
       Inst inst;
       Adresse addrStack = new Adresse();
-      
-      parcoursDecl(currentNode.getFils1(),addrStack);//Saving space for the variable in stack, and keeping their offset to know where each variable need to be save in the stack
-      Prog.ajouter(Inst.creation1(Operation.ADDSP, Operande.creationOpEntier(addrStack.getOffset())));//Instruction to move the StackPointer, depends on the number of variable
-      parcoursInst(currentNode.getFils2(), Prog.instance(), addrStack);//Reading all instructions and generate code.
-      
-     /* switch(currentNode.getNoeud())
-      {
-      	case Nop:
-      	case Vide: break;
-    	  
-      
-      	case Ligne: Prog.ajouter(Inst.creation0(Operation.WNL));
-      				break;
-      	
-      	case Ecriture:  inst = Inst.creation1(Operation.WSTR, Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine().substring(1,currentNode.getFils1().getFils2().getChaine().length()-1)));
-      					System.out.println(Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine()));
-      					Prog.ajouter(inst);
-      					break;		
-      	default:
-      		System.err.println("Unknown node");
-      }*/
+      //Saving space for the variable in stack, and keeping their offset to know where each variable need to be save in the stack
+      parcoursDecl(currentNode.getFils1(),addrStack);
+      //Instruction to move the StackPointer, depends on the number of variable
+      Prog.ajouter(Inst.creation1(Operation.ADDSP, Operande.creationOpEntier(addrStack.getOffset())));
+      //Reading all instructions and generate code.
+      parcoursInst(currentNode.getFils2(), Prog.instance(), addrStack);
       
       // Fin du programme
       // L'instruction "HALT"
@@ -53,25 +38,29 @@ class Generation {
 	
 	
 	static void parcoursInst(Arbre a, Prog prog, Adresse addrStack)
-	{
-		Arbre currentNode = a;
-		Noeud node = currentNode.getNoeud();		
-		if(node == Noeud.ListeInst)
+	{		
+      	/*case Ecriture:  inst = Inst.creation1(Operation.WSTR, Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine().substring(1,currentNode.getFils1().getFils2().getChaine().length()-1)));
+			System.out.println(Operande.creationOpChaine(currentNode.getFils1().getFils2().getChaine()));
+			Prog.ajouter(inst);
+			break;*/	
+		switch(a.getNoeud())
 		{
-			parcoursInst(currentNode.getFils1(), prog, addrStack);
-			parcoursInst(currentNode.getFils2(), prog, addrStack);
-		}
-		else if(node == Noeud.Vide || node == Noeud.Nop)return;
-		else if(node == Noeud.Affect)
-		{
-			//First case of an affect with no operation on the right side of the := sign
-			if(currentNode.getFils2().getNoeud() == Noeud.Entier || currentNode.getFils2().getNoeud() == Noeud.Reel || currentNode.getFils2().getNoeud() == Noeud.Ident || currentNode.getFils2().getNoeud() == Noeud.Index)directAffect(currentNode, prog, addrStack);
-	
-		}
-		else if(node == Noeud.Ligne)
-		{//Easy case to print new_line in terminal
+		case ListeInst : 
+			parcoursInst(a.getFils1(), prog, addrStack);
+			parcoursInst(a.getFils2(), prog, addrStack);
+			break;
+		case Affect : 
+			if(a.getFils2().getNoeud() == Noeud.Entier || a.getFils2().getNoeud() == Noeud.Reel || a.getFils2().getNoeud() == Noeud.Ident || a.getFils2().getNoeud() == Noeud.Index)
+			{
+				directAffect(a, prog, addrStack);
+			}
+			break;
+		case Ligne : 
 			Prog.ajouter(Inst.creation0(Operation.WNL));
-			return;
+		case Vide :
+		case Nop:
+		default:
+			break;
 		}
 		return;
 	}
@@ -86,12 +75,6 @@ class Generation {
 		String ident1, ident2 ;
 		int offset1, offset2;
 		
-		//Eventually manage problem of register
-		/*	if (R.estVide())
-		{
-			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(R)));	
-		}
-		Think of the end POP if necessary*/
 		//Info from the left side of :=
 		if(currentNode.getFils1().getNoeud() == Noeud.Index)
 		{ //affecting in an array as array[5][6] := something 
@@ -177,25 +160,18 @@ class Generation {
 
 	static void parcoursDecl(Arbre a, Adresse addr)
 	{//Parcours de la liste des déclarations, pour chaque Identificateur on lui associe un offset par rapport à GB pour le placer dans la pile
-		Arbre currentNode = a;
-		Noeud node = currentNode.getNoeud();
 		
-		//currentNode = currentNode.getFils2();
-		//System.out.println("Hello" + currentNode.getNoeud());
-		
-		if(node == Noeud.Programme)parcoursDecl(currentNode.getFils1(), addr);
-		else if(node == Noeud.ListeDecl)
+		switch(a.getNoeud())
 		{
-			parcoursDecl(currentNode.getFils1(), addr);
-			parcoursDecl(currentNode.getFils2(), addr);
-		}
-		else if(node == Noeud.Vide)return;
-		else if(node == Noeud.Decl)
-		{		
-			if(currentNode.getFils2().getNoeud() == Noeud.Tableau)
-			{
-				ArrayList<String> nom = searchIdent(currentNode.getFils1(), new ArrayList<String>());
-				ArrayList<Borne> borne = searchBorne(currentNode.getFils2(), new ArrayList<Borne>());
+		case ListeDecl : 
+			parcoursDecl(a.getFils1(), addr);
+			parcoursDecl(a.getFils2(), addr);
+			break;
+		case Decl :
+			if(a.getFils2().getNoeud() == Noeud.Tableau)
+			{ //Cas de déclaration d'un tableau on recupère bien toutes les dimensions et nom de tableau
+				ArrayList<String> nom = searchIdent(a.getFils1(), new ArrayList<String>());
+				ArrayList<Borne> borne = searchBorne(a.getFils2(), new ArrayList<Borne>());
 				Borne arrayBorne [] = new Borne[borne.size()];
 				for(String name : nom)
 				{
@@ -203,17 +179,20 @@ class Generation {
 				}
 				
 			}
-			else parcoursDecl(currentNode.getFils1(), addr);
+			else parcoursDecl(a.getFils1(), addr);
+			break;
+		case ListeIdent : 
+			parcoursDecl(a.getFils1(), addr);
+			parcoursDecl(a.getFils2(), addr);
+			break;
+		case Ident :
+			//Cas de déclaration d'autre chose qu'un tableau
+			addr.allouer(a.getChaine(), a.getDecor().getDefn().getType());
+			break;
+		default:
+			break;
 		}
-		else if(node == Noeud.ListeIdent)
-		{
-			parcoursDecl(currentNode.getFils1(), addr);
-			parcoursDecl(currentNode.getFils2(), addr);
-		}
-		else if(node == Noeud.Ident)
-		{
-			addr.allouer(currentNode.getChaine(), currentNode.getDecor().getDefn().getType());
-		}
+		return;
 	}
 
 	static String nameArray(Arbre a)
@@ -224,59 +203,53 @@ class Generation {
 	}
 	
 	static ArrayList<Integer> arrayIndices (Arbre a, ArrayList<Integer> ind)
-	{
-		if(a.getNoeud() == Noeud.Index)
+	{	
+		switch(a.getNoeud())
 		{
+		case Index :;
 			ind = arrayIndices(a.getFils1(), ind);
 			ind = arrayIndices(a.getFils2(), ind);
 			return(ind);
-		}
-		else if(a.getNoeud() == Noeud.Ident)return(ind);
-		else if(a.getNoeud() == Noeud.Entier)
-		{
+		case Entier :
 			ind.add(a.getEntier());
 			return(ind);
+		default : 
+			return(ind);
 		}
-		return(ind);
 	}
 	
 	static ArrayList<String> searchIdent (Arbre a, ArrayList<String> s)
 	{
-		Arbre currentNode = a;
-		Noeud node = currentNode.getNoeud();
-		if(node == Noeud.ListeIdent)
+		switch(a.getNoeud())
 		{
-			s = searchIdent(currentNode.getFils1(), s);
-			s = searchIdent(currentNode.getFils2(), s);
+		case ListeIdent : 
+			s = searchIdent(a.getFils1(), s);
+			s = searchIdent(a.getFils2(), s);
+			return(s);
+		case Ident :
+			s.add(a.getChaine());
+			return(s);
+		default:
 			return(s);
 		}
-		else if (node == Noeud.Vide)return(s);
-		else if (node == Noeud.Ident)
-		{
-			s.add(currentNode.getChaine());
-			return(s);
-		}
-		return(s);
 	}
 	
 	static ArrayList<Borne> searchBorne (Arbre a, ArrayList<Borne> b)
 	{
-		Arbre currentNode = a;
-		Noeud node = currentNode.getNoeud();
-		
-		if(node == Noeud.Tableau)
+		switch(a.getNoeud())
 		{
-			b = searchBorne(currentNode.getFils1(), b);
-			b = searchBorne(currentNode.getFils2(), b);
+		case Tableau : 
+			b = searchBorne(a.getFils1(), b);
+			b = searchBorne(a.getFils2(), b);
+			return(b);
+		case Intervalle :
+			b.add(new Borne(a.getFils1().getEntier(), a.getFils2().getEntier()));
+			return(b);
+		default :
 			return(b);
 		}
-		else if (node == Noeud.Intervalle)
-		{
-			b.add(new Borne(currentNode.getFils1().getEntier(), currentNode.getFils2().getEntier()));
-			return(b);
-		}
-		return(b);
 	}
+	
 }
 
 
