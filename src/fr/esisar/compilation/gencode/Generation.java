@@ -57,6 +57,7 @@ class Generation {
 			break;
 		case Ligne : 
 			Prog.ajouter(Inst.creation0(Operation.WNL));
+			break;
 		case Vide :
 		case Nop:
 		default:
