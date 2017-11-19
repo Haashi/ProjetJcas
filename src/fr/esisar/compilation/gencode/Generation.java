@@ -15,16 +15,15 @@ class Generation {
     * Génère du code pour l'arbre décoré a.
     */
 	static Prog coder(Arbre a) {
-	  Prog.ajouterGrosComment("Programme généré par JCasc");
-      Arbre currentNode = a; 
+	  Prog.ajouterGrosComment("Programme généré par JCasc"); 
       Inst inst;
       Adresse addrStack = new Adresse();
       //Saving space for the variable in stack, and keeping their offset to know where each variable need to be save in the stack
-      parcoursDecl(currentNode.getFils1(),addrStack);
+      parcoursDecl(a.getFils1(),addrStack);
       //Instruction to move the StackPointer, depends on the number of variable
       Prog.ajouter(Inst.creation1(Operation.ADDSP, Operande.creationOpEntier(addrStack.getOffset())));
       //Reading all instructions and generate code.
-      parcoursInst(currentNode.getFils2(), Prog.instance(), addrStack);
+      parcoursInst(a.getFils2(), Prog.instance(), addrStack);
       
       // Fin du programme
       // L'instruction "HALT"
@@ -107,7 +106,6 @@ class Generation {
 	
 	static void directAffect(Arbre a, Prog prog, Adresse addrStack)
 	{
-		Arbre currentNode = a; 
 		Registre R = Registre.R0;
 		ArrayList<Inst> inst = new ArrayList<Inst>();
 		ArrayList<Integer> ind;
@@ -116,40 +114,40 @@ class Generation {
 		int offset1, offset2;
 		
 		//Info from the left side of :=
-		if(currentNode.getFils1().getNoeud() == Noeud.Index)
+		if(a.getFils1().getNoeud() == Noeud.Index)
 		{ //affecting in an array as array[5][6] := something 
-			ident1 = nameArray(currentNode.getFils1());
-			ind = arrayIndices(currentNode.getFils1(), new ArrayList<Integer>());
+			ident1 = nameArray(a.getFils1());
+			ind = arrayIndices(a.getFils1(), new ArrayList<Integer>());
 			indArray = new Integer[ind.size()];
 			offset1 = addrStack.chercher(ident1, ind.toArray(indArray));	
 		}
 		else
 		{// Affecting to a real, integer, interval or boolean as variable := something
-			ident1 = currentNode.getFils1().getChaine();
+			ident1 = a.getFils1().getChaine();
 			offset1 = addrStack.chercher(ident1);			
 		}
 		
 		//Info from the left side of the := 
-		if(currentNode.getFils2().getNoeud() == Noeud.Index)
+		if(a.getFils2().getNoeud() == Noeud.Index)
 		{	//Case of an array something := array[5][6]
-			ind = arrayIndices(currentNode.getFils2(), new ArrayList<Integer>());
+			ind = arrayIndices(a.getFils2(), new ArrayList<Integer>());
 			indArray = new Integer[ind.size()];
-			ident2 = nameArray(currentNode.getFils2());
+			ident2 = nameArray(a.getFils2());
 			offset2 = addrStack.chercher(ident2, ind.toArray(indArray));
 			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpIndirect(offset2, Registre.GB), Operande.opDirect(R)));
 			inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));	
 		}
-		else if(currentNode.getFils2().getNoeud() == Noeud.Ident)
+		else if(a.getFils2().getNoeud() == Noeud.Ident)
 		{	//Case a := b 
-			ident2 = currentNode.getFils2().getChaine();
+			ident2 = a.getFils2().getChaine();
 			NatureType type;
-			if(currentNode.getFils1().getDecor().getType() == Type.Integer)
+			if(a.getFils1().getDecor().getType() == Type.Integer)
 			{
 				type = NatureType.Interval;
 			}
 			else
 			{
-				type = currentNode.getFils1().getDecor().getDefn().getType().getNature();
+				type = a.getFils1().getDecor().getDefn().getType().getNature();
 			}
 			
 			if(type == NatureType.Boolean)
@@ -186,14 +184,14 @@ class Generation {
 		}
 		else
 		{	//Case Entier or Reel on the right side :=,  as a constant value like 13 or 17.0 
-			if(currentNode.getFils2().getNoeud() == Noeud.Entier)
+			if(a.getFils2().getNoeud() == Noeud.Entier)
 			{
-				int alpha = currentNode.getFils2().getEntier();
+				int alpha = a.getFils2().getEntier();
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(alpha), Operande.opDirect(R)));
 			}
-			else if(currentNode.getFils2().getNoeud() == Noeud.Reel)
+			else if(a.getFils2().getNoeud() == Noeud.Reel)
 			{
-				float alpha = currentNode.getFils2().getReel();
+				float alpha = a.getFils2().getReel();
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpReel(alpha), Operande.opDirect(R)));
 			}
 			inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));

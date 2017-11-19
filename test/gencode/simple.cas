@@ -10,7 +10,7 @@ begin
    b := 1.5;
    f := 14;
    epsilon[1][5][10] := a;
-   write("Hello World ",b ,"Coucou");
+   write("Hello World ",b);
    new_line;
    write(a);
    new_line;

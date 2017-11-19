@@ -10,7 +10,9 @@
    STORE R0, 375(GB) 
    LOAD 1(GB), R0 
    STORE R0, 15(GB) 
-   WSTR "Hello World "",b ,""Coucou" 
+   WSTR "Hello World " 
+   LOAD 3(GB), R1 
+   WFLOAT 
    WNL 
    LOAD 1(GB), R1 
    WINT 
