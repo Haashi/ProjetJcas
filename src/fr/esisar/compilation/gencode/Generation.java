@@ -18,6 +18,7 @@ class Generation {
 	  Prog.ajouterGrosComment("Programme généré par JCasc"); 
       Inst inst;
       Adresse addrStack = new Adresse();
+      
       //Saving space for the variable in stack, and keeping their offset to know where each variable need to be save in the stack
       parcoursDecl(a.getFils1(),addrStack);
       //Instruction to move the StackPointer, depends on the number of variable
@@ -30,7 +31,24 @@ class Generation {
       inst = Inst.creation0(Operation.HALT);
       // On ajoute l'instruction à la fin du programme
       Prog.ajouter(inst);
-
+      
+      //Débordement 
+      Prog.ajouter(Prog.L_Etiq_Debordement_Intervalle);
+      Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("Task Successfully Failed")));
+      Prog.ajouter(inst);
+      
+      Prog.ajouter(Prog.L_Etiq_Debordement_Indice);
+      Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("Segmentation Fault")));
+      Prog.ajouter(inst);
+      
+      Prog.ajouter(Prog.L_Etiq_Debordement_Arith);
+      Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("BufferOverflow")));
+      Prog.ajouter(inst);
+      
+      Prog.ajouter(Prog.L_Etiq_Pile_Pleine);
+      Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("StackOverflow")));
+      Prog.ajouter(inst);
+      
       // On retourne le programme assembleur généré
       return Prog.instance(); 
    }
@@ -49,6 +67,10 @@ class Generation {
 			{
 				directAffect(a, prog, addrStack);
 			}
+			else
+			{
+				operationAffect(a, prog, addrStack);
+			}
 			break;
 		case Ecriture :
 			parcoursEcriture(a.getFils1(), prog, addrStack);
@@ -62,6 +84,10 @@ class Generation {
 			break;
 		}
 		return;
+	}
+	static void operationAffect(Arbre a, Prog prog, Adresse addrStack)
+	{
+		
 	}
 	
 	static void parcoursEcriture(Arbre a, Prog prog, Adresse addrStack )
@@ -103,7 +129,6 @@ class Generation {
 				str = nameArray(a);
 				offset = addrStack.chercher(str, ind.toArray(indArray));
 				inst.add(Inst.creation2(Operation.LOAD,Operande.creationOpIndirect(offset, Registre.GB),Operande.opDirect(Registre.R1)));
-				System.out.println(a.getDecor().getType().getNature());
 				if(a.getDecor().getType() == Type.Integer || a.getDecor().getType().getNature() == NatureType.Interval)
 				{
 					inst.add(Inst.creation0(Operation.WINT));
@@ -128,6 +153,7 @@ class Generation {
 		Integer [] indArray;
 		String ident1, ident2 ;
 		int offset1, offset2;
+		boolean isInterval = false;
 		
 		//Info from the left side of :=
 		if(a.getFils1().getNoeud() == Noeud.Index)
@@ -136,10 +162,10 @@ class Generation {
 			ind = arrayIndices(a.getFils1(), new ArrayList<Integer>());
 			indArray = new Integer[ind.size()];
 			offset1 = addrStack.chercher(ident1, ind.toArray(indArray));	
-			System.out.println(ident1);
 		}
 		else
 		{// Affecting to a real, integer, interval or boolean as variable := something
+			if(a.getDecor().getType() != Type.Integer && a.getDecor().getType().getNature() == NatureType.Interval)isInterval = true;
 			ident1 = a.getFils1().getChaine();
 			offset1 = addrStack.chercher(ident1);			
 		}
@@ -152,7 +178,6 @@ class Generation {
 			ident2 = nameArray(a.getFils2());
 			offset2 = addrStack.chercher(ident2, ind.toArray(indArray));
 			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpIndirect(offset2, Registre.GB), Operande.opDirect(R)));
-			inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));	
 		}
 		else if(a.getFils2().getNoeud() == Noeud.Ident)
 		{	//Case a := b 
@@ -172,27 +197,23 @@ class Generation {
 				if(ident2.equals("true"))
 				{	//We need to convert true to 1 
 					inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1), Operande.opDirect(R)));
-					inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));
 				}
 				else if (ident2.equals("false"))
 				{	//Same as above, with conversion from false to 0
-					inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(0), Operande.opDirect(R)));
-					inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));
-					
+					inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(0), Operande.opDirect(R)));					
 				}
 				else 
 				{	//No specific action here, because we load a variable from the stack 
 					offset2 = addrStack.chercher(ident2);
 					inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpIndirect(offset2, Registre.GB), Operande.opDirect(R)));
-					inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));
 				}
 			}
 			else if (type == NatureType.Real || type == NatureType.Interval)
 			{	//case where the right side is a real or a integer
 				offset2 = addrStack.chercher(ident2);
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpIndirect(offset2, Registre.GB), Operande.opDirect(R)));
-				inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));
 			}
+			
 			//Need to be the case of equality between two array, maybe for later
 			/*else if (type == NatureType.Array)
 			{
@@ -211,10 +232,32 @@ class Generation {
 				float alpha = a.getFils2().getReel();
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpReel(alpha), Operande.opDirect(R)));
 			}
-			inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));
 		}
+		
+		if(isInterval)
+		{
+			int sup, inf;
+			inf = a.getDecor().getType().getBorneInf() ;
+			sup = a.getDecor().getType().getBorneSup() ;
+			codeDebordInterval(inst,inf,sup,R);
+		}
+		
+		inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));	
 		ajouterInst(inst, prog);
 		return;
+	}
+	
+	static void codeDebordInterval (ArrayList<Inst> inst, int inf, int sup, Registre R)
+	{
+		Registre R2 = Registre.R2;
+		
+		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(inf), Operande.opDirect(R2)));
+		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
+		inst.add(Inst.creation1(Operation.BLT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+
+		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(sup), Operande.opDirect(R2)));
+		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
+		inst.add(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
 	}
 	
 	static void ajouterInst(ArrayList<Inst> i, Prog prog)

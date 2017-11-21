@@ -8,9 +8,9 @@ f:1..13;
 begin
    a := 13;
    b := 1.5;
-   f := 14;
-   epsilon[1][5][10] := a;
-   write("Hello World ",b);
+   f := 0;
+   epsilon[1][5][10] := 1.0;
+   write("Hello World voici a := ",a);
    new_line;
    write(epsilon[1][5][10]);
    new_line;
