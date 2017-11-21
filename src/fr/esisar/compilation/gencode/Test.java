@@ -10,18 +10,16 @@ public class Test {
 		  
 			  GestRegistres registres= new GestRegistres();
 			  Adresse memoire = new Adresse();
+			 Registre r = Registre.R0;
 			 
-			  for(int i =0 ; i<=16;i++) {
-				  memoire.allouer("ntm"+i,Type.Integer);
-				  Registre r = registres.getRegistre();
+			 for(int i =0 ;i<20;i++) {
+			  if(registres.estLibre()){
+				 r = registres.getRegistre();
 				  
-				  Operande2 Op = new Operande2("ntm" + i,memoire.chercher("ntm" + i));
-				  registres.setRegistre(r, Op);
 			  }
-			  registres.freeRegistre(Registre.R0);
-			  System.out.println(""+registres.getOperande(Registre.R1).getId());
-			  System.out.println(""+registres.estLibre(Registre.R0));
-			  System.out.println(""+registres.estLibre(Registre.R1));
+			 }
+		
+			 
 			  registres.afficher();
 			   Type a = Type.creationArray(Type.Integer,Type.String);
 			   Borne  borne = new Borne(0,5);

@@ -20,57 +20,42 @@ import java.util.Map;
 public class GestRegistres {
 	/** Registres[i] vaut true lors que Ri est disponible, false sinon **/
 	
-	private final HashMap<Registre, Operande2> Registres;
-	 
+	private final HashMap<Registre, Boolean> Registres;
+	private  int NbRegistresLibres;
+	
 	public GestRegistres() {
-		this.Registres = new HashMap<Registre, Operande2>();
+		this.Registres = new HashMap<Registre, Boolean>();
+		this.NbRegistresLibres=15;
 		for(Registre r : Registre.values()) {
-			Registres.put(r,null);
+			Registres.put(r,true);
 		}
 	}
-	public boolean estLibre(Registre registre) {
+	public boolean estLibre() {
 		
-		return(Registres.get(registre)==null);
+		return(NbRegistresLibres >2);
 	}
 	
 	public Registre getRegistre() {
 		/** retourne le premier registre libre -1 si aucun libre**/
-		
+	  
 		for(Registre r : Registre.values()) {
-			if(Registres.get(r)==null && r!=Registre.GB && r!=Registre.LB) {
-	
+			if(Registres.get(r) && r!=Registre.GB && r!=Registre.LB) {
+				NbRegistresLibres --;
+				Registres.put(r,false);
 				return (r);
 			}
 			
 		}
-		int max=Registres.get(Registre.R0).time;
-		Registre Rmax = Registre.R0;
-		for(Registre r : Registre.values()) {
-			if(r!=Registre.GB && r!=Registre.LB && Registres.get(r).time> max) {
-				max = Registres.get(r).time;
-				Rmax=r;
-			}
-		}
-		return(Rmax);
+	System.out.println("plus de registres");	
+	return(null);
 	}
-	public Operande2 getOperande(Registre registre) {
-		
-		return(Registres.get(registre));
-	}
-	public void setRegistre(Registre registre,Operande2 operande) {
-		
-		operande.time=0;
-		for(Registre r : Registre.values()) {
-			if(Registres.get(r)!=null && r!=Registre.GB && r!=Registre.LB)
-				Registres.get(r).time++;
-		}
-		Registres.put(registre,operande );
-		
-	}
+	
+	
+	
 	public boolean freeRegistre(Registre registre) {
-		if(Registres.get(registre)!=null) {
-			Registres.put(registre,null);
-		
+		if(!Registres.get(registre)) {
+			Registres.put(registre,true);
+			NbRegistresLibres ++;
 			return true;
 		}
 		else {
@@ -79,22 +64,13 @@ public class GestRegistres {
 		}
 	}
 	
-	public void lookRegistre(Registre registre) {
-		Registres.get(registre).time=0;
-	}
-	
 	   public void afficher() {
-		     for(Map.Entry<Registre, Operande2> r : Registres.entrySet()) {
+		     for(Map.Entry<Registre, Boolean> r : Registres.entrySet()) {
 			    
 			    	Registre id = r.getKey();
-			        String s = "REGISTRE : " + id + " --> Operande : ";
-			        Operande2 def = r.getValue();
-			        if(def==null) {
-			        	System.out.println(s + "null");
-			        }
-			        else {
-			        	System.out.println(s + def.getId() + " Time : " +def.time);
-			        }
+			        String s = "REGISTRE : " + id + " --> est disponible : ";
+			       Boolean def = r.getValue();
+			        System.out.println(s + " " +def);
 			     }
 	   }
 }
