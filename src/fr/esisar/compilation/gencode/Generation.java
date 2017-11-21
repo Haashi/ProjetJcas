@@ -96,6 +96,22 @@ class Generation {
 			}
 			break;
 		case Index :
+				Integer [] indArray;
+				ArrayList<Integer> ind;
+				ind = arrayIndices(a,new ArrayList<Integer>());
+				indArray = new Integer[ind.size()];
+				str = nameArray(a);
+				offset = addrStack.chercher(str, ind.toArray(indArray));
+				inst.add(Inst.creation2(Operation.LOAD,Operande.creationOpIndirect(offset, Registre.GB),Operande.opDirect(Registre.R1)));
+				System.out.println(a.getDecor().getType().getNature());
+				if(a.getDecor().getType() == Type.Integer || a.getDecor().getType().getNature() == NatureType.Interval)
+				{
+					inst.add(Inst.creation0(Operation.WINT));
+				}
+				else if (a.getDecor().getType().getNature() == NatureType.Real)
+				{
+					inst.add(Inst.creation0(Operation.WFLOAT));
+				}
 			break;
 		default :
 			break;
@@ -120,6 +136,7 @@ class Generation {
 			ind = arrayIndices(a.getFils1(), new ArrayList<Integer>());
 			indArray = new Integer[ind.size()];
 			offset1 = addrStack.chercher(ident1, ind.toArray(indArray));	
+			System.out.println(ident1);
 		}
 		else
 		{// Affecting to a real, integer, interval or boolean as variable := something
@@ -207,7 +224,6 @@ class Generation {
 
 	static void parcoursDecl(Arbre a, Adresse addr)
 	{//Parcours de la liste des déclarations, pour chaque Identificateur on lui associe un offset par rapport à GB pour le placer dans la pile
-		
 		switch(a.getNoeud())
 		{
 		case ListeDecl : 
