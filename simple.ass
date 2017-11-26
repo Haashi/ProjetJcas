@@ -1,5 +1,38 @@
 ; ----------------------------------------------------------------------
 ; -----------                      Programme généré par JCasc-----------
 ; ----------------------------------------------------------------------
-   WSTR "Coucou" 
+   ADDSP #375 
+   LOAD #13, R0 
+   STORE R0, 1(GB) 
+   LOAD #1.5, R0 
+   STORE R0, 3(GB) 
+   LOAD #0, R0 
+   LOAD #1, R2 
+   CMP R2, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #13, R2 
+   CMP R2, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 375(GB) 
+   LOAD #1.0, R0 
+   STORE R0, 15(GB) 
+   WSTR "Hello World voici a := " 
+   LOAD 1(GB), R1 
+   WINT 
+   WNL 
+   LOAD 15(GB), R1 
+   WFLOAT 
+   WNL 
+   HALT 
+etiq_debordement_intervalle: 
+   WSTR "Task Successfully Failed" 
+   HALT 
+etiq_debordement_indice: 
+   WSTR "Segmentation Fault" 
+   HALT 
+etiq_debordement_arith: 
+   WSTR "BufferOverflow" 
+   HALT 
+etiq_pile_pleine: 
+   WSTR "StackOverflow" 
    HALT 

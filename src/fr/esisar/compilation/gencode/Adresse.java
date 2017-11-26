@@ -1,5 +1,6 @@
 package fr.esisar.compilation.gencode;
 
+
 import fr.esisar.compilation.global.src.Defn;
 import fr.esisar.compilation.global.src.NatureType;
 import fr.esisar.compilation.global.src.Type;
@@ -7,6 +8,7 @@ import fr.esisar.compilation.global.src.Type;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.Iterator;
+
 public class Adresse {
 	
 
@@ -92,7 +94,7 @@ public class Adresse {
 		   }
 	      return Memoire.get(s);
 	   }
-	   
+
 	   public void liberer() {
 		   Enumeration<String> keys = Memoire.keys();
 		     while (keys.hasMoreElements()) {
@@ -104,6 +106,7 @@ public class Adresse {
 		    	}
 		     }
 	   }
+  
 	   public void afficher() {
 		     Enumeration<String> keys = Memoire.keys();
 		     while (keys.hasMoreElements()) {
@@ -117,6 +120,5 @@ public class Adresse {
 	   public int getOffset() {
 		   return this.offset;
 	   }
-	   
 	 
 }
