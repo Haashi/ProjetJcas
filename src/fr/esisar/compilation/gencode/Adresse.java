@@ -1,11 +1,13 @@
 package fr.esisar.compilation.gencode;
 
 
+import fr.esisar.compilation.global.src.Defn;
 import fr.esisar.compilation.global.src.NatureType;
 import fr.esisar.compilation.global.src.Type;
+
 import java.util.Hashtable;
 import java.util.Enumeration;
-
+import java.util.Iterator;
 
 public class Adresse {
 	
@@ -24,6 +26,7 @@ public class Adresse {
 	    */
 	   public Adresse() { 
 	      this.Memoire = new Hashtable<String, Integer>();
+	      this.offset=0;
 	   }
 
 	   /**
@@ -45,10 +48,6 @@ public class Adresse {
 	      }
 	   }
 
-	   	public int getOffset()
-	   	{
-	   		return(offset);
-	   	}
 	   	public void allouer(String id,Type type,Borne... borne) {
 	   		if(type.getNature()!=NatureType.Array) {
 	   			offset++;
@@ -95,6 +94,19 @@ public class Adresse {
 		   }
 	      return Memoire.get(s);
 	   }
+
+	   public void liberer() {
+		   Enumeration<String> keys = Memoire.keys();
+		     while (keys.hasMoreElements()) {
+		    	String id = keys.nextElement();
+		    	if(Memoire.get(id)==offset) {
+		    		Memoire.remove(id);
+		    		offset--;
+		    		break;
+		    	}
+		     }
+	   }
+  
 	   public void afficher() {
 		     Enumeration<String> keys = Memoire.keys();
 		     while (keys.hasMoreElements()) {
@@ -105,5 +117,8 @@ public class Adresse {
 		     }
 	   }
 	   
+	   public int getOffset() {
+		   return this.offset;
+	   }
 	 
 }
