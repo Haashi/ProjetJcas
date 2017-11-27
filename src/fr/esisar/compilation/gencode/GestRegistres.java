@@ -36,7 +36,7 @@ public class GestRegistres {
 	}
 	
 	public Registre getRegistre() {
-		/** retourne le premier registre libre -1 si aucun libre**/
+		/** retourne le premier registre libre null si aucun libre**/
 	  
 		for(Registre r : Registre.values()) {
 			if(Registres.get(r) && r!=Registre.GB && r!=Registre.LB) {
