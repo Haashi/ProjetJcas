@@ -75,6 +75,9 @@ class Generation {
 		case Ecriture :
 			parcoursEcriture(a.getFils1(), prog, addrStack);
 			break;
+		case Lecture :
+			parcoursLecture(a.getFils1(), prog, addrStack);
+			break;
 		case Ligne : 
 			Prog.ajouter(Inst.creation0(Operation.WNL));
 			break;
@@ -143,6 +146,34 @@ class Generation {
 		}
 		ajouterInst(inst, prog);
 		return;
+	}
+	
+	static void parcoursLecture(Arbre a, Prog prog, Adresse addrStack) {
+		
+		Registre R = Registre.R1;
+		ArrayList<Inst> inst = new ArrayList<Inst>();
+		ArrayList<Integer> ind;
+		Integer [] indArray;
+		String ident1, ident2 ;
+		int offset1, offset2;
+		boolean isInterval = false;
+		if(a.getFils1().getNoeud() == Noeud.Index)
+		{ //affecting in an array as array[5][6] := something 
+			ident1 = nameArray(a.getFils1());
+			ind = arrayIndices(a.getFils1(), new ArrayList<Integer>());
+			indArray = new Integer[ind.size()];
+			offset1 = addrStack.chercher(ident1, ind.toArray(indArray));
+		}
+		else
+		{// Affecting to a real, integer, interval or boolean as variable := something
+			if(a.getDecor().getType() != Type.Integer && a.getDecor().getType().getNature() == NatureType.Interval)isInterval = true;
+			ident1 = a.getFils1().getChaine();
+			offset1 = addrStack.chercher(ident1);			
+		}
+		inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));	
+		ajouterInst(inst, prog);
+		return;
+		
 	}
 	
 	static void directAffect(Arbre a, Prog prog, Adresse addrStack)
