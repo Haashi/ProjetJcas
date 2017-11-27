@@ -191,7 +191,10 @@ public class Verif {
 	   		break;
 	   	case Affect:
 	   		t1 = verifier_PLACE(a.getFils1());
+	   		
 	   		t2 = verifier_EXP(a.getFils2());
+	   		
+
 	   		ResultatAffectCompatible res = ReglesTypage.affectCompatible(t1,t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
@@ -282,7 +285,7 @@ public class Verif {
 	   if(def==null) {
 		   ErreurContext.ErreurIdentificateurNonDeclare.leverErreurContext(a.getChaine(), a.getNumLigne());
 	   }
-	   if(def.getGenre()!=Genre.NonPredefini) {
+	   if(def.getGenre()==Genre.PredefBoolean || def.getGenre()==Genre.PredefInteger || def.getGenre()==Genre.PredefReal) {
 		   ErreurContext.ErreurAffectationInvalide.leverErreurContext(a.getChaine(), a.getNumLigne());
 	   }
 	   Decor decor = new Decor(def);
