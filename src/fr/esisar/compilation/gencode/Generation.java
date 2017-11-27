@@ -244,7 +244,6 @@ class Generation {
 				offset2 = addrStack.chercher(ident2);
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpIndirect(offset2, Registre.GB), Operande.opDirect(R)));
 			}
-			
 			//Need to be the case of equality between two array, maybe for later
 			/*else if (type == NatureType.Array)
 			{

@@ -6,11 +6,12 @@ alpha:Array [1..5] of integer;
 epsilon:Array [1..5] of Array [5..10] of Array [10..15] of real;
 f:1..13;	
 begin
-   f := -10;
+   b := 10 + 1.5 ;
    epsilon[1][5][10] := 13 * 2 + 1 - p; 
    b := 1.5;
    epsilon[1][5][10] := a;
    write("Hello World",b);
-   write(epsilon[1][5][10]);
+   write(epsilon[1][5][10] + 2.0, a);
+   read(b);
    new_line;
 end.
