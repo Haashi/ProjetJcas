@@ -1,16 +1,4 @@
 program
-a,p:integer;
-b:real;
-c:boolean;
-alpha:Array [1..5] of integer;
-epsilon:Array [1..5] of Array [5..10] of Array [10..15] of real;
-f:1..13;	
+a:boolean;
 begin
-   f := -10;
-   epsilon[1][5][10] := 13 * 2 + 1 - p; 
-   b := 1.5;
-   epsilon[1][5][10] := a;
-   write("Hello World",b);
-   write(epsilon[1][5][10]);
-   new_line;
 end.
