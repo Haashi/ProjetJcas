@@ -1,4 +1,15 @@
 program
+a : 1..5;
+b,c : integer;
 begin
-	write(2.0+3+8);
+	a := 1;
+	b := 4;
+	c := 2;
+	if  a = 2 or c = 1  then
+		b := 2;
+	else
+		b:= 3;
+	end;
+	write(b);
+	new_line;
 end.
