@@ -64,6 +64,18 @@ public class GestRegistres {
 		}
 	}
 	
+	public boolean alloueRegistre(Registre registre) {
+		if(Registres.get(registre)) {
+			Registres.put(registre,false);
+			NbRegistresLibres ++;
+			return true;
+		}
+		else {
+			System.out.println("Registre déjà occupé");
+			return false;
+		}
+	}
+	
 	   public void afficher() {
 		     for(Map.Entry<Registre, Boolean> r : Registres.entrySet()) {
 			    

@@ -40,7 +40,7 @@ class Generation {
       inst = Inst.creation0(Operation.HALT);
       // On ajoute l'instruction à la fin du programme
       Prog.ajouter(inst);
-      
+      addrStack.afficher();
       //Débordement 
       Prog.ajouter(Prog.L_Etiq_Debordement_Intervalle);
       Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("Task Successfully Failed")));
@@ -124,13 +124,27 @@ class Generation {
 		   	case Nop:
 		   		break;
 		   	case Affect:
-		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		parcoursPlaceStore(a.getFils1(),prog,addrStack,gestRegistre,t2);
-		   		gestRegistre.freeRegistre(t2);
+		   		switch(a.getDecor().getType().getNature()) {
+				case Array:
+					System.out.println("allo");
+					break;
+				case Boolean:
+				case Interval:
+				case Real:
+					t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+			   		parcoursPlaceStore(a.getFils1(),prog,addrStack,gestRegistre,t2);
+			   		gestRegistre.freeRegistre(t2);
+			   		break;
+				default:
+					break;
+		   		}
+		   		
 		   		break;
 		   	case Pour:
+		   		parcoursPour(a,prog,addrStack,gestRegistre);
 		   		break;
 		   	case TantQue:
+		   		parcoursTantQue(a,prog,addrStack,gestRegistre);
 		   		break;
 		   	case Si:
 		   		parcoursSi(a, prog, addrStack, gestRegistre);
@@ -149,32 +163,89 @@ class Generation {
 		   }
 	}
 	
+	private static void parcoursPour(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre) {
+		//probleme debordement intervalle
+		Registre t2;
+		Registre t1;
+		Etiq e1 = Etiq.nouvelle("etiq");
+		Etiq e2 = Etiq.nouvelle("etiq");
+		ArrayList<Inst> inst = new ArrayList<Inst>();
+		t2=parcoursExp(a.getFils1().getFils2(),prog,addrStack,gestRegistre);
+		parcoursPlaceStore(a.getFils1().getFils1(),prog,addrStack,gestRegistre,t2);
+		gestRegistre.freeRegistre(t2);
+		Prog.ajouter(e1);
+		switch(a.getFils1().getNoeud()) {
+		case Decrement:
+			t1=parcoursPlaceLoad(a.getFils1().getFils1(),prog,addrStack,gestRegistre);
+			t2=parcoursExp(a.getFils1().getFils3(),prog,addrStack,gestRegistre);
+			Prog.ajouter((Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1))));
+			gestRegistre.freeRegistre(t2);
+			gestRegistre.freeRegistre(t1);
+			Prog.ajouter((Inst.creation1(Operation.BLT,Operande.creationOpEtiq(e2))));
+			parcoursListeInst(a.getFils2(),prog,addrStack,gestRegistre);
+	   		
+			t1=parcoursPlaceLoad(a.getFils1().getFils1(),prog,addrStack,gestRegistre);
+	   		Prog.ajouter((Inst.creation2(Operation.SUB, Operande.creationOpEntier(1),Operande.opDirect(t1))));
+	   		Prog.ajouter((Inst.creation1(Operation.BOV,Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Arith))));
+	   		parcoursPlaceStore(a.getFils1().getFils1(),prog,addrStack,gestRegistre,t1);
+	   		gestRegistre.freeRegistre(t1);
+			
+			inst.add(Inst.creation1(Operation.BRA, Operande.creationOpEtiq(e1)));
+			ajouterInst(inst,prog);
+			Prog.ajouter(e2);
+			t1=parcoursPlaceLoad(a.getFils1().getFils1(),prog,addrStack,gestRegistre);
+	   		Prog.ajouter((Inst.creation2(Operation.ADD, Operande.creationOpEntier(1),Operande.opDirect(t1))));
+	   		parcoursPlaceStore(a.getFils1().getFils1(),prog,addrStack,gestRegistre,t1);
+	   		gestRegistre.freeRegistre(t1);
+			break;
+		case Increment:
+			t1=parcoursPlaceLoad(a.getFils1().getFils1(),prog,addrStack,gestRegistre);
+			t2=parcoursExp(a.getFils1().getFils3(),prog,addrStack,gestRegistre);
+			Prog.ajouter((Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1))));
+			gestRegistre.freeRegistre(t2);
+			gestRegistre.freeRegistre(t1);
+			Prog.ajouter((Inst.creation1(Operation.BGT,Operande.creationOpEtiq(e2))));
+			parcoursListeInst(a.getFils2(),prog,addrStack,gestRegistre);
+	   		
+			t1=parcoursPlaceLoad(a.getFils1().getFils1(),prog,addrStack,gestRegistre);
+	   		Prog.ajouter((Inst.creation2(Operation.ADD, Operande.creationOpEntier(1),Operande.opDirect(t1))));
+	   		Prog.ajouter((Inst.creation1(Operation.BOV,Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Arith))));
+	   		parcoursPlaceStore(a.getFils1().getFils1(),prog,addrStack,gestRegistre,t1);
+	   		gestRegistre.freeRegistre(t1);
+			
+			Prog.ajouter(Inst.creation1(Operation.BRA, Operande.creationOpEtiq(e1)));
+			Prog.ajouter(e2);
+			t1=parcoursPlaceLoad(a.getFils1().getFils1(),prog,addrStack,gestRegistre);
+	   		Prog.ajouter((Inst.creation2(Operation.SUB, Operande.creationOpEntier(1),Operande.opDirect(t1))));
+	   		parcoursPlaceStore(a.getFils1().getFils1(),prog,addrStack,gestRegistre,t1);
+	   		gestRegistre.freeRegistre(t1);
+			break;
+		default:
+			break;
+		}
+		
+	}
 	private static void parcoursTantQue(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre){
-		/*Etiq e1,e2
+		/* Vue par Jordan
+		 * Etiq e1,e2
 		 * Branchement inconditionnel BRA vers e2
 		 * Pose e1
 		 * parcoursListeInt(Fils2)
 		 * Pose e2
 		 * ParcoursCond(Fils1)
 		 * Branchement en fonction de la condition vers e1 -> BXX e1
+		 *
 		 */
-		;
+		Etiq e1 = Etiq.nouvelle("etiq");
+		Etiq e2 = Etiq.nouvelle("etiq");
+		Prog.ajouter(Inst.creation1(Operation.BRA, Operande.creationOpEtiq(e2)));
+		Prog.ajouter(e1);
+		parcoursListeInst(a.getFils2(), prog, addrStack, gestRegistre);
+		Prog.ajouter(e2);
+		parcoursCond(a.getFils1(), prog, addrStack, gestRegistre, e1);
 	}
 	
 	private static void parcoursSi(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre){
-		/*Etiq e1,e2
-		 * parcoursCond(Fils1) avec branch conditionnel vers etiq 1 
-		 * 	parcoursExp(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre);
-		 * switch(a.getNoeud){
-		 * 	case Inf:
-		 * 			BLT
-		 * }
-		 * parcoursListeInst(Fils3) avec branch non conditionnel vers etiq2
-		 * BRA etiq2
-		 * Pose etiq1
-		 * parcoursListeInst(Fils2)
-		 * pose Etiq2
-		 */
 		Etiq e1 = Etiq.nouvelle("etiq");
 		Etiq e2 = Etiq.nouvelle("etiq");
 		parcoursCond(a.getFils1(), prog, addrStack, gestRegistre, e1);
@@ -186,7 +257,7 @@ class Generation {
 	}
 	
 	private static void parcoursCond(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre, Etiq e1){
-		parcoursExp(a, prog, addrStack, gestRegistre);
+		Registre t1=parcoursExp(a, prog, addrStack, gestRegistre);
 		ArrayList<Inst> inst = new ArrayList<Inst>();
 		switch(a.getNoeud()){
 		case Egal:
@@ -216,24 +287,27 @@ class Generation {
 		case SupEgal:
 			inst.add(Inst.creation1(Operation.BGE, Operande.creationOpEtiq(e1)));
 			break;
+		case Ident:
+			inst.add(Inst.creation2(Operation.CMP, Operande.creationOpEntier(1), Operande.opDirect(t1)));
+			inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(e1)));
+			break;
 		default:
 			break;	
 		}
+		gestRegistre.freeRegistre(t1);
 		ajouterInst(inst, prog);
 	}
 	
 	private static Registre parcoursPlaceStore(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre, Registre R){
 		   Registre t1;
 		   Registre t2;
+		   ArrayList<Integer> taille = new ArrayList<Integer>();
 		   switch(a.getNoeud()) {
-		   	/*case Index:
-		   		t1=parcoursPlace(a.getFils1());
-		   		t2=parcoursExp(a.getFils2());
-		   		ResultatBinaireCompatible res = ReglesTypage.binaireCompatible(Noeud.Index, t1, t2,a.getNumLigne());
-		   		Decor decor = new Decor(res.getTypeRes());
-		   		
-			 	a.setDecor(decor);
-		   		return res.getTypeRes();*/ // on verra plus tard les tableaux
+		   	case Index:
+		   		t1=parcoursPlaceTablLoad(a,prog,addrStack,gestRegistre,taille);
+		   		Prog.ajouter(Inst.creation2(Operation.STORE,Operande.opDirect(R),Operande.creationOpIndexe(0, Registre.GB, t1)));
+		   		gestRegistre.freeRegistre(t1);
+		   		return t1; // on verra plus tard les tableaux
 		   	case Ident:
 		   		t1=parcoursIDFStore(a,prog,addrStack,gestRegistre,R);
 		   		return t1;
@@ -245,15 +319,12 @@ class Generation {
 	private static Registre parcoursPlaceLoad(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre){
 		   Registre t1;
 		   Registre t2;
+		   ArrayList<Integer> taille = new ArrayList<Integer>();
 		   switch(a.getNoeud()) {
-		   	/*case Index:
-		   		t1=parcoursPlace(a.getFils1());
-		   		t2=parcoursExp(a.getFils2());
-		   		ResultatBinaireCompatible res = ReglesTypage.binaireCompatible(Noeud.Index, t1, t2,a.getNumLigne());
-		   		Decor decor = new Decor(res.getTypeRes());
-		   		
-			 	a.setDecor(decor);
-		   		return res.getTypeRes();*/ // on verra plus tard les tableaux
+		   	case Index:
+		   		t1=parcoursPlaceTablLoad(a,prog,addrStack,gestRegistre,taille);
+		   		Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpIndexe(0, Registre.GB, t1),Operande.opDirect(t1)));;
+		   		return t1; // on verra plus tard les tableaux
 		   	case Ident:
 		   		t1=parcoursIDFLoad(a,prog,addrStack,gestRegistre);
 		   		return t1;
@@ -262,12 +333,106 @@ class Generation {
 		return null;
 	   }
 	
+	private static Registre parcoursPlaceTablLoad(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre,ArrayList<Integer> taille){
+		   Registre t1;
+		   Registre t2;
+		   switch(a.getNoeud()) {
+		   	case Index:
+		   		try {
+		   			taille.add(a.getDecor().getType().getIndice().getBorneSup()-a.getDecor().getType().getIndice().getBorneInf()+1);
+		   		}
+		   		catch(Exception e) {
+		   			
+		   		}
+		   		t1=parcoursPlaceTablLoad(a.getFils1(),prog,addrStack,gestRegistre,taille);
+		   		if(a.getFils1().getNoeud()==Noeud.Ident) {
+		   			int mul=1;
+			   		for(Integer i:taille) {
+			   			mul*=i;
+			   		}
+			   		try {
+			   			taille.remove(taille.size()-1);
+			   		}
+			   		catch(Exception e) {
+			   			
+			   		}
+		   			t2=parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   			Prog.ajouter(Inst.creation2(Operation.SUB, Operande.creationOpEntier(a.getFils1().getDecor().getDefn().getType().getIndice().getBorneInf()), Operande.opDirect(t2)));
+		   			Prog.ajouter(Inst.creation2(Operation.MUL, Operande.creationOpEntier(mul), Operande.opDirect(t2)));
+			   		Prog.ajouter(Inst.creation2(Operation.ADD, Operande.opDirect(t2), Operande.opDirect(t1)));
+			   		gestRegistre.freeRegistre(t2);
+		   		}
+		   		else {
+		   			t2=parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+			   		int mul=1;
+			   		for(Integer i:taille) {
+			   			mul*=i;
+			   		}
+			   		try {
+			   			taille.remove(taille.size()-1);
+			   		}
+			   		catch(Exception e) {
+			   			
+			   		}
+			   		try {
+			   			Prog.ajouter(Inst.creation2(Operation.SUB, Operande.creationOpEntier(a.getFils1().getDecor().getType().getIndice().getBorneInf()), Operande.opDirect(t2)));
+			   		}
+			   		catch(Exception e) {
+			   		}
+			   		
+			   		Prog.ajouter(Inst.creation2(Operation.MUL, Operande.creationOpEntier(mul), Operande.opDirect(t2)));
+			   		
+			   		Prog.ajouter(Inst.creation2(Operation.ADD, Operande.opDirect(t2), Operande.opDirect(t1)));
+			   		gestRegistre.freeRegistre(t2);
+		   		}
+		   		
+		   		return t1; // on verra plus tard les tableaux
+		   	case Ident:
+		   		t1=parcoursIDFTablLoad(a,prog,addrStack,gestRegistre);
+		   		//System.out.println(a.getDecor().getDefn().getType().getIndice().getBorneInf());
+		   		return t1;
+		   	default:
+		   }
+		return null;
+	   }
+	
+	private static Registre parcoursIDFTablLoad(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre) {
+		ArrayList<Inst> inst = new ArrayList<Inst>();
+		String ident = a.getChaine();
+		Registre R = gestRegistre.getRegistre();
+		if(ident.equals("true")) {
+			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(R)));
+		}
+		else if(ident.equals("false")) {
+			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(0),Operande.opDirect(R)));
+		}
+		else if(ident.equals("max_int")){
+			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(java.lang.Integer.MAX_VALUE),Operande.opDirect(R)));
+		}
+		else {
+			int offset = addrStack.chercher(ident);
+			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(offset),Operande.opDirect(R)));
+		}
+		ajouterInst(inst, prog);
+		
+		return R;
+	}
+	
 	private static Registre parcoursIDFStore(Arbre a,Prog prog, Adresse addrStack,GestRegistres gestRegistre,Registre R) {
 		ArrayList<Inst> inst = new ArrayList<Inst>();
 		String ident = a.getChaine();
 		int offset = addrStack.chercher(ident);
+		switch(a.getDecor().getDefn().getType().getNature()) {
+		case Interval:
+			codeDebordInterval(a.getDecor().getDefn().getType().getBorneInf(), a.getDecor().getDefn().getType().getBorneSup(), gestRegistre,R);
+			break;
+		default:
+			break;
+		
+		}
 		inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset, Registre.GB)));	
 		ajouterInst(inst, prog);
+		gestRegistre.freeRegistre(R);
 		
 		return null;
 	}
@@ -361,7 +526,7 @@ class Generation {
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
 		   		inst.add(Inst.creation2(Operation.MUL, Operande.opDirect(t1), Operande.opDirect(t2)));
-		   		inst.add(Inst.creation2(Operation.STORE, Operande.creationOpEntier(1),Operande.opDirect(t1)));
+		   		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(t1)));
 		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1),Operande.opDirect(t2)));
 		   		inst.add(Inst.creation1(Operation.SEQ, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
@@ -371,16 +536,16 @@ class Generation {
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
 		   		inst.add(Inst.creation2(Operation.ADD, Operande.opDirect(t1), Operande.opDirect(t2)));
-		   		inst.add(Inst.creation2(Operation.STORE, Operande.creationOpEntier(1),Operande.opDirect(t1)));
+		   		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(t1)));
 		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1),Operande.opDirect(t2)));
-		   		inst.add(Inst.creation1(Operation.SEQ, Operande.opDirect(t1)));
+		   		inst.add(Inst.creation1(Operation.SGE, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
 		   		return t1;
 		   	case Egal:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1)));
 		   		inst.add(Inst.creation1(Operation.SEQ, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -388,7 +553,7 @@ class Generation {
 		   	case NonEgal:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1)));
 		   		inst.add(Inst.creation1(Operation.SNE, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -396,7 +561,7 @@ class Generation {
 		   	case InfEgal:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1)));
 		   		inst.add(Inst.creation1(Operation.SLE, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -404,7 +569,7 @@ class Generation {
 		   	case Inf:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1)));
 		   		inst.add(Inst.creation1(Operation.SLT, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -412,7 +577,7 @@ class Generation {
 		   	case SupEgal:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1)));
 		   		inst.add(Inst.creation1(Operation.SGE, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -420,7 +585,7 @@ class Generation {
 		   	case Sup:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t2), Operande.opDirect(t1)));
 		   		inst.add(Inst.creation1(Operation.SGT, Operande.opDirect(t1)));
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -428,17 +593,17 @@ class Generation {
 		   	case DivReel:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t1), Operande.opDirect(t2)));	
+		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
-		   		gestRegistre.freeRegistre(t1);
-		   		return t2;
+		   		gestRegistre.freeRegistre(t2);
+		   		return t1;
 		   	case Quotient:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t1), Operande.opDirect(t2)));	
+		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
-		   		gestRegistre.freeRegistre(t1);
-		   		return t2;
+		   		gestRegistre.freeRegistre(t2);
+		   		return t1;
 		   	case Mult:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
@@ -450,10 +615,10 @@ class Generation {
 		   	case Reste:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
-		   		inst.add(Inst.creation2(Operation.MOD, Operande.opDirect(t1), Operande.opDirect(t2)));	
+		   		inst.add(Inst.creation2(Operation.MOD, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
-		   		gestRegistre.freeRegistre(t1);
-		   		return t2;
+		   		gestRegistre.freeRegistre(t2);
+		   		return t1;
 		   	case Index:
 		   		t1 = parcoursPlaceLoad(a,prog,addrStack,gestRegistre);
 		   		return t1;
@@ -558,53 +723,27 @@ class Generation {
 		return;
 	}
 	*/
-	static void parcoursLecture(Arbre a, Prog prog, Adresse addrStack,GestRegistres gestRegistre) {
-		
+	static void parcoursLecture(Arbre a, Prog prog, Adresse addrStack,GestRegistres gestRegistre) {	
 		Registre R = Registre.R1;
+		gestRegistre.alloueRegistre(R);
 		ArrayList<Inst> inst = new ArrayList<Inst>();
-		ArrayList<Integer> ind;
-		Integer [] indArray;
-		String ident1, ident2 ;
-		int offset1, offset2;
-		boolean isInterval = false;
-		if(a.getNoeud() == Noeud.Index)
-		{ //affecting in an array as array[5][6] := something 
-			ident1 = nameArray(a.getFils1());
-			ind = arrayIndices(a.getFils1(), new ArrayList<Integer>());
-			indArray = new Integer[ind.size()];
-			offset1 = addrStack.chercher(ident1, ind.toArray(indArray));
-		}
-		else
-		{// Affecting to a real, integer, interval or boolean as variable := something
-			System.out.println(a.getFils1().getDecor().getDefn().getType());
-			if(a.getFils1().getDecor().getDefn().getType() != Type.Integer && a.getFils1().getDecor().getDefn().getType().getNature() == NatureType.Interval)isInterval = true;
-			ident1 = a.getFils1().getChaine();
-			offset1 = addrStack.chercher(ident1);			
-		}
-		
-		if(isInterval)
-		{
-			int sup, inf;
-			inf = a.getFils1().getDecor().getType().getBorneInf() ;
-			sup = a.getFils1().getDecor().getType().getBorneSup() ;
-			codeDebordInterval(inst,inf,sup,R);
-		}
-		
-		if(a.getFils1().getDecor().getDefn().getType()==Type.Integer || a.getFils1().getDecor().getDefn().getType().getNature()==NatureType.Interval) {
+		switch(a.getFils1().getDecor().getDefn().getType().getNature()) {
+		case Interval:
 			inst.add(Inst.creation0(Operation.RINT));
-		}
-		else if(a.getFils1().getDecor().getDefn().getType().getNature()==NatureType.Real) {
+			break;
+		case Real:
 			inst.add(Inst.creation0(Operation.RFLOAT));
+			break;
+		default:
+			break;
+		
 		}
-		
-		inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));	
-		ajouterInst(inst, prog);
-
-		return;
-		
+		ajouterInst(inst,prog);
+		parcoursIDFStore(a.getFils1(),prog,addrStack,gestRegistre,R);
+		gestRegistre.freeRegistre(R);
 	}
 	
-	static void directAffect(Arbre a, Prog prog, Adresse addrStack,GestRegistres gestRegistre)
+	/*static void directAffect(Arbre a, Prog prog, Adresse addrStack,GestRegistres gestRegistre)
 	{
 		Registre R = Registre.R0;
 		ArrayList<Inst> inst = new ArrayList<Inst>();
@@ -676,7 +815,7 @@ class Generation {
 			/*else if (type == NatureType.Array)
 			{
 				
-			}*/
+			}
 		}
 		else
 		{	//Case Entier or Reel on the right side :=,  as a constant value like 13 or 17.0 
@@ -703,19 +842,20 @@ class Generation {
 		inst.add(Inst.creation2(Operation.STORE, Operande.opDirect(R), Operande.creationOpIndirect(offset1, Registre.GB)));	
 		ajouterInst(inst, prog);
 		return;
-	}
+	}*/
 	
-	static void codeDebordInterval (ArrayList<Inst> inst, int inf, int sup, Registre R)
+	static void codeDebordInterval (int inf, int sup, GestRegistres gestRegitre, Registre R)
 	{
-		Registre R2 = Registre.R2;
+		Registre R2 = gestRegitre.getRegistre();
 		
-		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(inf), Operande.opDirect(R2)));
-		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
-		inst.add(Inst.creation1(Operation.BLT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+		Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(inf), Operande.opDirect(R2)));
+		Prog.ajouter(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
+		Prog.ajouter(Inst.creation1(Operation.BLT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
 
-		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(sup), Operande.opDirect(R2)));
-		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
-		inst.add(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+		Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(sup), Operande.opDirect(R2)));
+		Prog.ajouter(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
+		Prog.ajouter(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+		gestRegitre.freeRegistre(R2);
 	}
 	
 	static void ajouterInst(ArrayList<Inst> i, Prog prog)
@@ -739,7 +879,7 @@ class Generation {
 				Borne arrayBorne [] = new Borne[borne.size()];
 				for(String name : nom)
 				{
-					addr.allouerTableau(name,borne.toArray(arrayBorne));
+					addr.allouer(name,NatureType.Array,borne.toArray(arrayBorne));
 				}
 				
 			}
@@ -751,7 +891,7 @@ class Generation {
 			break;
 		case Ident :
 			//Cas de déclaration d'autre chose qu'un tableau
-			addr.allouer(a.getChaine(), a.getDecor().getDefn().getType());
+			addr.allouer(a.getChaine(), a.getDecor().getDefn().getType().getNature());
 			break;
 		default:
 			break;

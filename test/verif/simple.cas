@@ -1,1 +1,6 @@
+program
+i:array[1..5] of array[2..3] of integer;
+b:array[2..3] of integer;
+begin
+i[1]:=b;
 end.

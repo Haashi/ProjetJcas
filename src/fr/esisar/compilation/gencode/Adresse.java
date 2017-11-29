@@ -48,8 +48,8 @@ public class Adresse {
 	      }
 	   }
 
-	   	public void allouer(String id,Type type,Borne... borne) {
-	   		if(type.getNature()!=NatureType.Array) {
+	   	public void allouer(String id,NatureType type,Borne... borne) {
+	   		if(type!=NatureType.Array) {
 	   			offset++;
 	   			boolean ajouter = this.enrichir(id, offset);
 	   			if(!ajouter) {
@@ -57,6 +57,11 @@ public class Adresse {
 	   			}
 	   		}
 	   		else {
+	   			offset++;
+	   			boolean ajouter = this.enrichir(id, offset);
+	   			if(!ajouter) {
+	   				System.out.println("Erreur dans l'ajout adresse");
+	   			}
 	   			allouerTableau(id,borne);
 	   		}
 	   	}

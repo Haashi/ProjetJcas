@@ -1,0 +1,183 @@
+; ----------------------------------------------------------------------
+; -----------                      Programme généré par JCasc-----------
+; ----------------------------------------------------------------------
+   ADDSP #26 
+   LOAD #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 21(GB) 
+etiq.1: 
+   LOAD 21(GB), R0 
+   LOAD #20, R1 
+   CMP R1, R0 
+   BGT etiq.2 
+   LOAD #2, R0 
+   LOAD 21(GB), R1 
+   MUL R0, R1 
+   BOV etiq_debordement_arith 
+   LOAD #1, R0 
+   LOAD 21(GB), R2 
+   SUB #1, R2 
+   MUL #1, R2 
+   ADD R2, R0 
+   STORE R1, 0(GB, R0) 
+   LOAD 21(GB), R0 
+   ADD #1, R0 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 21(GB) 
+   BRA etiq.1 
+etiq.2: 
+   LOAD 21(GB), R0 
+   SUB #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 21(GB) 
+   WSTR """Valeur a chercher dans le tableau :""" 
+   RINT 
+   LOAD #-2147483647, R0 
+   CMP R0, R1 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R0 
+   CMP R0, R1 
+   BGT etiq_debordement_intervalle 
+   STORE R1, 25(GB) 
+   LOAD #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 22(GB) 
+   LOAD #20, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 23(GB) 
+   LOAD #0, R0 
+   STORE R0, 26(GB) 
+   BRA etiq.4 
+etiq.3: 
+   LOAD 22(GB), R0 
+   LOAD 23(GB), R1 
+   ADD R0, R1 
+   BOV etiq_debordement_arith 
+   LOAD #2, R0 
+   DIV R0, R1 
+   LOAD #-2147483647, R0 
+   CMP R0, R1 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R0 
+   CMP R0, R1 
+   BGT etiq_debordement_intervalle 
+   STORE R1, 24(GB) 
+   LOAD #1, R0 
+   LOAD 24(GB), R1 
+   SUB #1, R1 
+   MUL #1, R1 
+   ADD R1, R0 
+   LOAD 0(GB, R0), R0 
+   LOAD 25(GB), R1 
+   CMP R1, R0 
+   SEQ R0 
+   BEQ etiq.5 
+   LOAD #1, R0 
+   LOAD 24(GB), R1 
+   SUB #1, R1 
+   MUL #1, R1 
+   ADD R1, R0 
+   LOAD 0(GB, R0), R0 
+   LOAD 25(GB), R1 
+   CMP R1, R0 
+   SLT R0 
+   BLT etiq.7 
+   LOAD 24(GB), R0 
+   LOAD #1, R1 
+   SUB R1, R0 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 23(GB) 
+   BRA etiq.8 
+etiq.7: 
+   LOAD 24(GB), R0 
+   LOAD #1, R1 
+   ADD R0, R1 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R0 
+   CMP R0, R1 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R0 
+   CMP R0, R1 
+   BGT etiq_debordement_intervalle 
+   STORE R1, 22(GB) 
+etiq.8: 
+   BRA etiq.6 
+etiq.5: 
+   LOAD #1, R0 
+   STORE R0, 26(GB) 
+etiq.6: 
+etiq.4: 
+   LOAD 22(GB), R0 
+   LOAD 23(GB), R1 
+   CMP R1, R0 
+   SLE R0 
+   LOAD 26(GB), R1 
+   ADD #1, R1 
+   MOD #2, R1 
+   MUL R0, R1 
+   LOAD #1, R0 
+   CMP R0, R1 
+   SEQ R0 
+   BEQ etiq.3 
+   LOAD 26(GB), R0 
+   CMP #1, R0 
+   BEQ etiq.9 
+   WSTR """Valeur "", val, "" non trouvee""" 
+   BRA etiq.10 
+etiq.9: 
+   WSTR """Trouve : T["", milieu, ""] = """ 
+   LOAD #1, R0 
+   LOAD 24(GB), R1 
+   SUB #1, R1 
+   MUL #1, R1 
+   ADD R1, R0 
+   LOAD 0(GB, R0), R0 
+   LOAD R0, R1 
+   WINT 
+etiq.10: 
+   WNL 
+   HALT 
+etiq_debordement_intervalle: 
+   WSTR "Task Successfully Failed" 
+   HALT 
+etiq_debordement_indice: 
+   WSTR "Segmentation Fault" 
+   HALT 
+etiq_debordement_arith: 
+   WSTR "BufferOverflow" 
+   HALT 
+etiq_pile_pleine: 
+   WSTR "StackOverflow" 
+   HALT 
