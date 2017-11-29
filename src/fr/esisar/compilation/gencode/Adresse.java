@@ -59,10 +59,12 @@ public class Adresse {
 	   		else {
 	   			offset++;
 	   			boolean ajouter = this.enrichir(id, offset);
-	   			if(!ajouter) {
-	   				System.out.println("Erreur dans l'ajout adresse");
+	   			offset--;
+	   			int mul=1;
+	   			for(int i=0;i<borne.length;i++) {
+	   				mul=mul*(borne[i].getBorneSup()-borne[i].getBorneInf()+1);
 	   			}
-	   			allouerTableau(id,borne);
+	   			offset+=mul;
 	   		}
 	   	}
 	   	

@@ -1,5 +1,6 @@
 program
-i:array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of array[1..5] of integer;
+t:array[1..3] of integer;
 begin
-null;
+read(t[2]);
+write(t[2]);
 end.
