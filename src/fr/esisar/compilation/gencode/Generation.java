@@ -1029,10 +1029,12 @@ class Generation {
 		   		return t1;
 		   	case MoinsUnaire:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre,table);
+		   		
 		   		if(t1==null){
-		   			
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			switch(a.getFils1().getNoeud()) {
+		   			case Reel:
+		   			case Entier:
 		   			case Index:
 		   				switch(a.getFils1().getDecor().getType().getNature()) {
 		   				case Interval:
@@ -1067,19 +1069,6 @@ class Generation {
 		   		}
 		   		else{
 		   			switch(a.getFils1().getNoeud()) {
-		   			case Index:
-		   				switch(a.getFils1().getDecor().getType().getNature()) {
-		   				case Interval:
-				   			inst.add(Inst.creation2(Operation.MUL, Operande.creationOpEntier(-1),Operande.opDirect(Registre.R14)));
-		   					break;
-		   				case Real:
-				   			inst.add(Inst.creation2(Operation.MUL, Operande.creationOpReel(-1),Operande.opDirect(Registre.R14)));
-		   					break;
-		   				default:
-		   					break;
-		   				
-		   				}
-		   				break;
 		   			case Ident:
 		   				switch(a.getFils1().getDecor().getDefn().getType().getNature()) {
 		   				case Interval:
@@ -1090,6 +1079,22 @@ class Generation {
 		   					break;
 		   				default:
 		   					break;
+		   				}
+		   				break;
+
+		   			case Reel:
+		   			case Entier:
+		   			case Index:
+		   				switch(a.getFils1().getDecor().getType().getNature()) {
+		   				case Interval:
+				   			inst.add(Inst.creation2(Operation.MUL, Operande.creationOpEntier(-1),Operande.opDirect(t1)));
+		   					break;
+		   				case Real:
+				   			inst.add(Inst.creation2(Operation.MUL, Operande.creationOpReel(-1),Operande.opDirect(t1)));
+		   					break;
+		   				default:
+		   					break;
+		   				
 		   				}
 		   				break;
 		   			default:
