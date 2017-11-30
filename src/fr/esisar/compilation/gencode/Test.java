@@ -8,7 +8,7 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		  
-			  GestRegistres registres= new GestRegistres();
+			  /*GestRegistres registres= new GestRegistres();
 			  Adresse memoire = new Adresse();
 			 Registre r = Registre.R0;
 			 
@@ -19,12 +19,12 @@ public class Test {
 			  }
 			 }
 		
-			 
 			  registres.afficher();
 			   Type a = Type.creationArray(Type.Integer,Type.String);
 			   Borne  borne = new Borne(0,5);
 			   Borne borne2= new Borne(0,3);
-			
+			*/
+			aff(8);
 			/* 
 			   Memoire.allouer("a", a, borne,borne2);
 			   Memoire.allouer("b", Type.Integer);
@@ -39,6 +39,20 @@ public class Test {
 			   adresse = Memoire.chercher("b");
 			   System.out.println(adresse + "b");*/
 			   
+	}
+	
+	public static void aff (int i)
+	{
+		if (i == 0)
+		{
+			System.out.print(1);
+			return;
+		}
+		System.out.print("(");
+		aff(i-1);
+		System.out.print("+");
+		aff(i-1);
+		System.out.print(")");			
 	}
 
 }

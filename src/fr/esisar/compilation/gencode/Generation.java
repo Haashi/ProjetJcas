@@ -32,6 +32,7 @@ class Generation {
       parcoursDecl(a.getFils1(),addrStack);
       //Instruction to move the StackPointer, depends on the number of variable
       Prog.ajouter(Inst.creation1(Operation.ADDSP, Operande.creationOpEntier(addrStack.getOffset())));
+      System.out.println(addrStack.getOffset());
       //Reading all instructions and generate code.
       parcoursListeInst(a.getFils2(), Prog.instance(), addrStack,gestRegistre);
       
@@ -57,6 +58,11 @@ class Generation {
       Prog.ajouter(Prog.L_Etiq_Pile_Pleine);
       Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("StackOverflow")));
       Prog.ajouter(inst);
+      
+      Prog.ajouter(Prog.L_Etiq_Div_0);
+      Prog.ajouter(Inst.creation1(Operation.WSTR, Operande.creationOpChaine("Division par 0")));
+      Prog.ajouter(inst);
+      
       
       // On retourne le programme assembleur généré
       return Prog.instance(); 
@@ -144,20 +150,29 @@ class Generation {
 		   	case Affect:
 		   		switch(a.getDecor().getType().getNature()) {
 				case Array:
+					Registre t4 = gestRegistre.getRegistre();
+					Etiq e1 = Etiq.nouvelle("etiq"), e2 = Etiq.nouvelle("etiq");
 					t3 = parcoursExpTabl(a.getFils2(),prog,addrStack,gestRegistre);
 					t2 = parcoursExpTabl(a.getFils1(),prog,addrStack,gestRegistre);
 					int taille = parcoursTaille(a.getDecor().getType());
 					t1=gestRegistre.getRegistre();
-					for(int i=0;i<taille;i++) {
-						
-						Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpIndexe(0, Registre.GB, t3), Operande.opDirect(t1)));
-						Prog.ajouter(Inst.creation2(Operation.STORE, Operande.opDirect(t1),Operande.creationOpIndexe(0, Registre.GB, t2)));
-						Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t3)));
-						Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t2)));
-					}
+					
+					Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(0), Operande.opDirect(t4)));
+					Prog.ajouter(e1);
+					Prog.ajouter(Inst.creation2(Operation.CMP,Operande.creationOpEntier(taille),Operande.opDirect(t4)));
+					Prog.ajouter(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(e2)));
+					Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpIndexe(0, Registre.GB, t3), Operande.opDirect(t1)));
+					Prog.ajouter(Inst.creation2(Operation.STORE, Operande.opDirect(t1),Operande.creationOpIndexe(0, Registre.GB, t2)));
+					Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t3)));
+					Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t2)));
+					Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t4)));
+					Prog.ajouter(Inst.creation1(Operation.BRA, Operande.creationOpEtiq(e1)));
+					Prog.ajouter(e2);
+				
 					gestRegistre.freeRegistre(t1);
 					gestRegistre.freeRegistre(t2);
 					gestRegistre.freeRegistre(t3);
+					gestRegistre.freeRegistre(t4);
 					break;
 				case Boolean:
 				case Interval:
@@ -338,7 +353,7 @@ class Generation {
 		   		t1=parcoursPlaceTablLoad(a,prog,addrStack,gestRegistre,taille);
 		   		switch(a.getDecor().getType().getNature()) {
 				case Interval:
-					codeDebordInterval(a.getDecor().getType().getBorneInf(), a.getDecor().getType().getBorneSup(), gestRegistre,R);
+					codeDebordInterval(a.getDecor().getType().getBorneInf(), a.getDecor().getType().getBorneSup(), gestRegistre,R,false);
 					break;
 				default:
 					break;
@@ -466,6 +481,7 @@ class Generation {
 			   			
 			   		}*/
 		   			t2=parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   			codeDebordInterval(a.getFils1().getDecor().getDefn().getType().getIndice().getBorneInf(), a.getFils1().getDecor().getDefn().getType().getIndice().getBorneSup(),gestRegistre,t2,true);
 		   			Prog.ajouter(Inst.creation2(Operation.SUB, Operande.creationOpEntier(a.getFils1().getDecor().getDefn().getType().getIndice().getBorneInf()), Operande.opDirect(t2)));
 		   			Prog.ajouter(Inst.creation2(Operation.MUL, Operande.creationOpEntier(mul), Operande.opDirect(t2)));
 			   		Prog.ajouter(Inst.creation2(Operation.ADD, Operande.opDirect(t2), Operande.opDirect(t1)));
@@ -474,6 +490,7 @@ class Generation {
 		   		else {
 		   			
 		   			t2=parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   			codeDebordInterval(a.getFils1().getDecor().getType().getIndice().getBorneInf(), a.getFils1().getDecor().getType().getIndice().getBorneSup(),gestRegistre,t2,true);
 		   			try {
 		   				System.out.println("test"+a.getFils1().getDecor().getType().getIndice().getBorneInf());
 			   			System.out.println("test"+a.getFils1().getDecor().getType().getIndice().getBorneSup());
@@ -481,7 +498,7 @@ class Generation {
 		   			catch(Exception e) {
 		   			}
 		   			int mul=parcoursTaille(a.getDecor().getType());
-			   		System.out.println(mul);
+			   		
 			   		/*for(Integer i:taille) {
 			   			mul*=i;
 			   		}
@@ -541,7 +558,7 @@ class Generation {
 		int offset = addrStack.chercher(ident);
 		switch(a.getDecor().getDefn().getType().getNature()) {
 		case Interval:
-			codeDebordInterval(a.getDecor().getDefn().getType().getBorneInf(), a.getDecor().getDefn().getType().getBorneSup(), gestRegistre,R);
+			codeDebordInterval(a.getDecor().getDefn().getType().getBorneInf(), a.getDecor().getDefn().getType().getBorneSup(), gestRegistre,R,false);
 			break;
 		default:
 			break;
@@ -646,6 +663,7 @@ class Generation {
 		   	case Et:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		
 		   		inst.add(Inst.creation2(Operation.MUL, Operande.opDirect(t1), Operande.opDirect(t2)));
 		   		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(t1)));
 		   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(t1),Operande.opDirect(t2)));
@@ -714,6 +732,8 @@ class Generation {
 		   	case DivReel:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.creationOpReel(0), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
 		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -721,6 +741,8 @@ class Generation {
 		   	case Quotient:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.creationOpEntier(0), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
 		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -736,6 +758,8 @@ class Generation {
 		   	case Reste:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.creationOpEntier(0), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
 		   		inst.add(Inst.creation2(Operation.MOD, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -886,6 +910,8 @@ class Generation {
 		   	case DivReel:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.creationOpReel(0), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
 		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -893,6 +919,8 @@ class Generation {
 		   	case Quotient:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
 		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.creationOpEntier(0), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
 		   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -907,7 +935,9 @@ class Generation {
 		   		return t2;
 		   	case Reste:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre);
-		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);
+		   		t2 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre);		   		
+		   		inst.add(Inst.creation2(Operation.CMP, Operande.creationOpEntier(0), Operande.opDirect(t2)));
+		   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
 		   		inst.add(Inst.creation2(Operation.MOD, Operande.opDirect(t2), Operande.opDirect(t1)));	
 		   		ajouterInst(inst, prog);
 		   		gestRegistre.freeRegistre(t2);
@@ -1159,17 +1189,28 @@ class Generation {
 		return;
 	}*/
 	
-	static void codeDebordInterval (int inf, int sup, GestRegistres gestRegitre, Registre R)
+	static void codeDebordInterval (int inf, int sup, GestRegistres gestRegitre, Registre R, boolean tab )
 	{
 		Registre R2 = gestRegitre.getRegistre();
 		
 		Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(inf), Operande.opDirect(R2)));
 		Prog.ajouter(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
-		Prog.ajouter(Inst.creation1(Operation.BLT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
-
+		if(tab){
+			Prog.ajouter(Inst.creation1(Operation.BLT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Indice)));
+		}
+		else
+		{
+			Prog.ajouter(Inst.creation1(Operation.BLT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+		}
 		Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(sup), Operande.opDirect(R2)));
 		Prog.ajouter(Inst.creation2(Operation.CMP, Operande.opDirect(R2), Operande.opDirect(R)));
-		Prog.ajouter(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+		if(tab){
+			Prog.ajouter(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Indice)));
+		}
+		else
+		{
+			Prog.ajouter(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Intervalle)));
+		}
 		gestRegitre.freeRegistre(R2);
 	}
 	

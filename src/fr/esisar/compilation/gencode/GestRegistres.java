@@ -39,7 +39,7 @@ public class GestRegistres {
 		/** retourne le premier registre libre null si aucun libre**/
 	  
 		for(Registre r : Registre.values()) {
-			if(Registres.get(r) && r!=Registre.GB && r!=Registre.LB) {
+			if(Registres.get(r) && r!=Registre.GB && r!=Registre.LB && r!=Registre.R15 && r!=Registre.R14) {
 				NbRegistresLibres --;
 				Registres.put(r,false);
 				return (r);

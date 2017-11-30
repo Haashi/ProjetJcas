@@ -59,6 +59,13 @@ public class Prog {
    public static final Etiq L_Etiq_Pile_Pleine = 
       Etiq.lEtiq("Etiq_Pile_Pleine");
 
+   /**
+    * Etiquette prédéfinie pour la division par 0.
+    * Cette étiquette est L_Etiq_Div_0
+    */
+   public static final Etiq L_Etiq_Div_0 = 
+		      Etiq.lEtiq("Division_par_0");
+   
 
    /**
     * Constructeur de programme.
