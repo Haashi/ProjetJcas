@@ -1165,7 +1165,7 @@ class Generation {
 		   		t1 = parcoursIDFLoad(a,prog,addrStack,gestRegistre,table);
 		   		return t1;
 		   	case Chaine:
-		   		inst.add(Inst.creation1(Operation.WSTR, Operande.creationOpChaine(a.getChaine())));
+		   		inst.add(Inst.creation1(Operation.WSTR, Operande.creationOpChaine(a.getChaine().substring(1, a.getChaine().length()-1))));
 		   		ajouterInst(inst, prog);
 		   		break;
 		   	case Entier:

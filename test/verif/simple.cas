@@ -1,27 +1,4 @@
 program
-pi,a,b:real;
-i,j:integer;
 begin
-i := 1;
-write("Nombre de coefficient");
-new_line;
-read(j);
-pi := 1;
-
-while i<j do 
-	if ((i mod 2 )= 0) then
-		a := 1.0;
-	else
-		a:= -1.0;
-		write(a);
-		write("Bob");	  
-	end;
-	
-	new_line;
-	b := a / (2*i +1);
-	pi := pi + b;
-	i := i + 1;
-end;
-
-write("Pi = ", pi*4);
+null;
 end.

@@ -18,7 +18,9 @@ end;
 write ("[");
 for i:= 1 to 10 do 
 	write(T[i]);
-	write(",");
+	if i<10 then
+		write(",");
+	end;
 end;
 write("]");
 end.  

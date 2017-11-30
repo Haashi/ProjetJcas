@@ -1,7 +1,7 @@
 ; ----------------------------------------------------------------------
 ; -----------                      Programme généré par JCasc-----------
 ; ----------------------------------------------------------------------
-   ADDSP #5 
+   ADDSP #13 
    LOAD #1, R0 
    LOAD #-2147483647, R1 
    CMP R1, R0 
@@ -9,58 +9,26 @@
    LOAD #2147483647, R1 
    CMP R1, R0 
    BGT etiq_debordement_intervalle 
-   STORE R0, 4(GB) 
-   WSTR """Nombre de coefficient""" 
-   WNL 
-   RINT 
-   LOAD #-2147483647, R0 
-   CMP R0, R1 
+   STORE R0, 11(GB) 
+   LOAD #2, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
    BLT etiq_debordement_intervalle 
-   LOAD #2147483647, R0 
-   CMP R0, R1 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
    BGT etiq_debordement_intervalle 
-   STORE R1, 5(GB) 
-   LOAD #1, R0 
-   FLOAT R0, R1 
-   STORE R1, 1(GB) 
+   STORE R0, 12(GB) 
    BRA etiq.2 
 etiq.1: 
-   LOAD 4(GB), R0 
-   LOAD #2, R1 
-   CMP #0, R1 
-   BEQ division_par_0 
-   MOD R1, R0 
-   LOAD #0, R1 
-   CMP R1, R0 
-   SEQ R0 
-   BEQ etiq.3 
-   LOAD #1.0, R0 
-   MUL #-1.0, R0 
-   STORE R0, 2(GB) 
-   BRA etiq.4 
-etiq.3: 
-   LOAD #1.0, R0 
-   STORE R0, 2(GB) 
-etiq.4: 
-   LOAD 2(GB), R0 
-   LOAD #2, R1 
-   LOAD 4(GB), R2 
-   MUL R2, R1 
-   BOV etiq_debordement_arith 
-   LOAD #1, R2 
-   ADD R2, R1 
-   BOV etiq_debordement_arith 
-   FLOAT R1, R2 
-   CMP #0.0, R2 
-   BEQ division_par_0 
-   DIV R2, R0 
-   STORE R0, 3(GB) 
-   LOAD 1(GB), R0 
-   LOAD 3(GB), R1 
-   ADD R1, R0 
-   BOV etiq_debordement_arith 
-   STORE R0, 1(GB) 
-   LOAD 4(GB), R0 
+   WSTR "Bob" 
+   LOAD 11(GB), R0 
+   LOAD R0, R1 
+   WINT 
+   WSTR "Coucou" 
+   LOAD 12(GB), R0 
+   LOAD R0, R1 
+   WINT 
+   LOAD 11(GB), R0 
    LOAD #1, R1 
    ADD R1, R0 
    BOV etiq_debordement_arith 
@@ -70,21 +38,32 @@ etiq.4:
    LOAD #2147483647, R1 
    CMP R1, R0 
    BGT etiq_debordement_intervalle 
-   STORE R0, 4(GB) 
+   STORE R0, 11(GB) 
+   LOAD 12(GB), R0 
+   LOAD #1, R1 
+   ADD R1, R0 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 12(GB) 
 etiq.2: 
-   LOAD 4(GB), R0 
-   LOAD 5(GB), R1 
+   LOAD 11(GB), R0 
+   LOAD #10, R1 
    CMP R1, R0 
    SLT R0 
-   BLT etiq.1 
-   WSTR """Pi = """ 
-   LOAD 1(GB), R0 
-   LOAD #4, R1 
-   FLOAT R1, R2 
-   MUL R2, R0 
-   BOV etiq_debordement_arith 
-   LOAD R0, R1 
-   WFLOAT 
+   LOAD 12(GB), R1 
+   LOAD #8, R2 
+   CMP R2, R1 
+   SLT R1 
+   MUL R0, R1 
+   LOAD #1, R0 
+   CMP R0, R1 
+   SEQ R0 
+   BEQ etiq.1 
    HALT 
 etiq_debordement_intervalle: 
    WSTR "Task Successfully Failed" 

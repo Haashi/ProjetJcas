@@ -1,7 +1,4 @@
 program
-i:array[1..5] of array[2..6] of array[2..7] of integer;
-a:integer;
 begin
 null;
-a:=i[4][5][3];
 end.
