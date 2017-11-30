@@ -45,7 +45,7 @@ public class Test {
 	{
 		if (i == 0)
 		{
-			System.out.print(1);
+			System.out.print("b[1]");
 			return;
 		}
 		System.out.print("(");

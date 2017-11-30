@@ -1,7 +1,5 @@
 package fr.esisar.compilation.gencode;
 import fr.esisar.compilation.global.src3.Registre;
-import fr.esisar.compilation.global.src3.Operande;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,20 +44,21 @@ public class GestRegistres {
 			}
 			
 		}
-	System.out.println("plus de registres");	
 	return(null);
 	}
 	
 	
 	
 	public boolean freeRegistre(Registre registre) {
+		if(registre==null){
+			return false;
+		}
 		if(!Registres.get(registre)) {
 			Registres.put(registre,true);
 			NbRegistresLibres ++;
 			return true;
 		}
 		else {
-			System.out.println("Registre déjà libéré");
 			return false;
 		}
 	}
@@ -71,7 +70,6 @@ public class GestRegistres {
 			return true;
 		}
 		else {
-			System.out.println("Registre déjà occupé");
 			return false;
 		}
 	}

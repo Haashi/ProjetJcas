@@ -1,13 +1,9 @@
 package fr.esisar.compilation.gencode;
 
 
-import fr.esisar.compilation.global.src.Defn;
 import fr.esisar.compilation.global.src.NatureType;
-import fr.esisar.compilation.global.src.Type;
-
 import java.util.Hashtable;
 import java.util.Enumeration;
-import java.util.Iterator;
 
 public class Adresse {
 	
@@ -26,7 +22,7 @@ public class Adresse {
 	    */
 	   public Adresse() { 
 	      this.Memoire = new Hashtable<String, Integer>();
-	      this.offset=0;
+	      offset=0;
 	   }
 
 	   /**
@@ -58,7 +54,7 @@ public class Adresse {
 	   		}
 	   		else {
 	   			offset++;
-	   			boolean ajouter = this.enrichir(id, offset);
+	   			this.enrichir(id, offset);
 	   			offset--;
 	   			int mul=1;
 	   			for(int i=0;i<borne.length;i++) {
@@ -125,7 +121,7 @@ public class Adresse {
 	   }
 	   
 	   public int getOffset() {
-		   return this.offset;
+		   return offset;
 	   }
 	 
 }

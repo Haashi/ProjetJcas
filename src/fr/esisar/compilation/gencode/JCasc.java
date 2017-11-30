@@ -40,7 +40,7 @@ public class JCasc {
          PrintStream ps = System.out;
          if (fichierAss != null) {
             System.setOut(new PrintStream(new File(fichierAss))); 
-            prog.afficher();
+            Prog.afficher();
             System.setOut(ps);
             System.out.println(
                "-- Programme correctement compilé dans " + fichierAss); 
