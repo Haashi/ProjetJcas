@@ -511,6 +511,7 @@ public class Verif {
 	   		t2 = verifier_EXP(a.getFils2());
 	   		res = ReglesTypage.binaireCompatible(Noeud.DivReel, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
+
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
 	   			decor = new Decor(t1);
 		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));

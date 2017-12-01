@@ -1,0 +1,40 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	b:boolean;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+	ab:Array [1..5] of boolean;
+	a:integer;
+begin
+for a:=1 to 5 do
+	ab[a]:=true;
+end;
+	b:=true;
+	b := b and b;
+	if not b then
+		write("Erreur1");
+	end;
+	b := b or b;
+	if not b then
+		write("Erreur2");
+	end;
+	b := ab[1] and ab[1];
+	if not b then
+		write("Erreur3");
+	end;
+	b := ab[1] or ab[1];
+	if not b then
+		write("Erreur4");
+	end;
+	b := ab[1] and b;
+	if not b then
+		write("Erreur5");
+	end;
+	b := ab[1] or  b;
+	if not b then
+		write("Erreur6");
+	end;
+end.

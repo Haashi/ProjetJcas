@@ -1,16 +1,15 @@
 program
-r : array[1..13] of real;
-i : array[1..13] of integer;
-j : integer;
+	i:integer;
+	r,d:real;
+	j:1..13;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
 begin
-for j := 1 to 13 do
-	i[j] := 1; 	
-end;
-write("coucou");
-r := i;
-write("Bob");
-for j := 1 to 13 do
-	write(r[j]); 	
-end;
-	
-end.  
+	ai[1]:=2;
+	aj[1]:=4;
+	i:=4;
+	j:=3;
+	r:=2;
+   d := ai[1] / i;
+end.

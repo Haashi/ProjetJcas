@@ -1,0 +1,160 @@
+program
+	i:integer;
+	r:real;
+	j:1..13;
+	b:boolean;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+begin
+	aj[1]:=1;
+	ai[1]:=1;
+	ar[1]:=1;
+	r:=1;
+	j:=1;
+	i:=1;
+	b := not (aj[1] = r);
+	if b then
+		write("Erreur0");
+	end;
+	b := not (aj[1] = i);
+	if b then
+		write("Erreur1");
+	end;
+	b := not (aj[1] = j);
+	if b then
+		write("Erreur2");
+	end;
+	b := not (aj[1] = ai[1]);
+	if b then
+		write("Erreur3");
+	end;
+	b := not (aj[1] = aj[1]);
+	if b then
+		write("Erreur4");
+	end;
+	b := not (aj[1] = ar[1]);
+	if b then
+		write("Erreur5");
+	end;
+	b := not (aj[1] < r);
+	if not b then
+		write("Erreur6");
+	end;
+	b := not (aj[1] < i);
+	if not b then
+		write("Erreur7");
+	end;
+	b := not (aj[1] < j);
+	if not b then
+		write("Erreur8");
+	end;
+	b := not (aj[1] < ai[1]);
+	if not b then
+		write("Erreur9");
+	end;
+	b := not (aj[1] < aj[1]);
+	if not b then
+		write("Erreur10");
+	end;
+	b := not (aj[1] < ar[1]);
+	if not b then
+		write("Erreur11");
+	end;
+	b := not (aj[1] > r);
+	if not b then
+		write("Erreur12");
+	end;
+	b := not (aj[1] > i);
+	if not b then
+		write("Erreur13");
+	end;
+	b := not (aj[1] > j);
+	if not b then
+		write("Erreur14");
+	end;
+	b := not (aj[1] > ai[1]);
+	if not b then
+		write("Erreur15");
+	end;
+	b := not (aj[1] > aj[1]);
+	if not b then
+		write("Erreur16");
+	end;
+	b := not (aj[1] > ar[1]);
+	if not b then
+		write("Erreur17");
+	end;
+	b := not (aj[1] /= r);
+	if not b then
+		write("Erreur18");
+	end;
+	b := not (aj[1] /= i);
+	if not b then
+		write("Erreur19");
+	end;
+	b := not (aj[1] /= j);
+	if not b then
+		write("Erreur20");
+	end;
+	b := not (aj[1] /= ai[1]);
+	if not b then
+		write("Erreur21");
+	end;
+	b := not (aj[1] /= aj[1]);
+	if not b then
+		write("Erreur22");
+	end;
+	b := not (aj[1] /= ar[1]);
+	if not b then
+		write("Erreur23");
+	end;
+	b := not (aj[1] <= r);
+	if b then
+		write("Erreur24");
+	end;
+	b := not (aj[1] <= i);
+	if b then
+		write("Erreur25");
+	end;
+	b := not (aj[1] <= j);
+	if b then
+		write("Erreur26");
+	end;
+	b := not (aj[1] <= ai[1]);
+	if b then
+		write("Erreur27");
+	end;
+	b := not (aj[1] <= aj[1]);
+	if b then
+		write("Erreur28");
+	end;
+	b := not (aj[1] <= ar[1]);
+	if b then
+		write("Erreur29");
+	end;
+	b := not (aj[1] >= r);
+	if b then
+		write("Erreur30");
+	end;
+	b := not (aj[1] >= i);
+	if b then
+		write("Erreur31");
+	end;
+	b := not (aj[1] >= j);
+	if b then
+		write("Erreur32");
+	end;
+	b := not (aj[1] >= ai[1]);
+	if b then
+		write("Erreur33");
+	end;
+	b := not (aj[1] >= aj[1]);
+	if b then
+		write("Erreur34");
+	end;
+	b := not (aj[1] >= ar[1]);
+	if b then
+		write("Erreur35");
+	end;
+end.

@@ -1,5 +1,8 @@
 package fr.esisar.compilation.gencode;
 
+/** classe générique pour regrouper 2 valeurs en un seul objet
+ * 
+ */
 public class Borne {
 	private int BorneInf;
 	private int BorneSup;

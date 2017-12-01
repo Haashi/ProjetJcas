@@ -186,6 +186,8 @@ public class ReglesTypage  {
 					 switch(t2.getNature()) {
 						 case Interval:
 							 ok=true;
+							 conv1=true;
+							 conv2=true;
 							 TypeRes=Type.Real;
 							 break;
 						 case Real:

@@ -4,14 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/** estLibre(), getRegistre(), getOperande(),setRegistre(),freeRegistre(),lookRegistre(),afficher() 
- * estLibre() : return true si le registre est libre
- * getOperande() : retourne l'opérande contenue dans le registre demandé
- * setRegistre() : remplit un registre avec une operande
- * freeRegistre(): libere un registre
- * lookRegistre() : remet le time d'un registre à 0
- * afficher() : affiche le contenu de tous les registres
- * @author root
+/** Classe pour gérer les registres, 
+ * les registres sont gérer par une HashMap<Registre,Boolean>
  *
  */
 
@@ -23,11 +17,12 @@ public class GestRegistres {
 	
 	public GestRegistres() {
 		this.Registres = new HashMap<Registre, Boolean>();
-		this.NbRegistresLibres=15;
+		this.NbRegistresLibres=13;
 		for(Registre r : Registre.values()) {
 			Registres.put(r,true);
 		}
 	}
+	
 	public boolean estLibre() {
 		
 		return(NbRegistresLibres >2);
@@ -48,7 +43,7 @@ public class GestRegistres {
 	}
 	
 	
-	
+	//indique qu'un registre n'est plus libre
 	public boolean freeRegistre(Registre registre) {
 		if(registre==null){
 			return false;
@@ -63,6 +58,7 @@ public class GestRegistres {
 		}
 	}
 	
+	//indique qu'un registre est occupé
 	public boolean alloueRegistre(Registre registre) {
 		if(Registres.get(registre)) {
 			Registres.put(registre,false);
@@ -74,6 +70,7 @@ public class GestRegistres {
 		}
 	}
 	
+	//sert à des fin de test uniquement
 	   public void afficher() {
 		     for(Map.Entry<Registre, Boolean> r : Registres.entrySet()) {
 			    

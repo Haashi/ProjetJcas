@@ -43,7 +43,8 @@ public class Adresse {
 	         return true;
 	      }
 	   }
-
+	   
+	   //a chaque allocation on incrémente l'offset
 	   	public void allouer(String id,NatureType type,Borne... borne) {
 	   		if(type!=NatureType.Array) {
 	   			offset++;
@@ -53,6 +54,7 @@ public class Adresse {
 	   			}
 	   		}
 	   		else {
+	   			//si c'est un tableau, on ajoute la taille du tableau à l'offset
 	   			offset++;
 	   			this.enrichir(id, offset);
 	   			offset--;
@@ -63,35 +65,14 @@ public class Adresse {
 	   			offset+=mul;
 	   		}
 	   	}
-	   	
-	   	public void allouerTableau(String id,Borne...borne) {
-	   		if(borne.length==1) {
-	   			for(int j= borne[0].getBorneInf();j<=borne[0].getBorneSup();j++) {
-   					offset++;
-   					boolean ajouter = this.enrichir(id.concat("["+j+"]"), offset);
-   					if(!ajouter) {
-   						System.out.println("Erreur lors de l'ajout adresse tableau");
-   					}
-   				}
-	   		}
-	   		else {
-	   			Borne newBorne[]= new Borne[borne.length-1];
-	   			int i=0;
-	   			for(int j=1;j<borne.length;j++) {
-	   				newBorne[i]=borne[j];
-	   				i++;
-	   			}
-	   			for(i=borne[0].getBorneInf();i<=borne[0].getBorneSup();i++) {
-	   				allouerTableau(id.concat("["+i+"]"),newBorne);
-	   			}
-	   		}
-	   	}
-	   /**
-	    * Cherche la defn associée à la chaîne s dans l'environnement.
-	    * Si la chaîne s n'est pas dans l'environnement, chercher(s) 
-	    * retourne null.
-	    */
+
+	  
 	   public Integer chercher(String s,Integer... indices) {
+		   /**
+		    * Cherche la defn associée à la chaîne s dans l'environnement.
+		    * Si la chaîne s n'est pas dans l'environnement, chercher(s) 
+		    * retourne null.
+		    */
 		   for (int i=0;i<indices.length;i++) {
 			   s=s.concat("["+indices[i]+"]");
 		   }
@@ -109,7 +90,7 @@ public class Adresse {
 		    	}
 		     }
 	   }
-  
+	   //affiche toutes les correspondances identifiants -> adresses
 	   public void afficher() {
 		     Enumeration<String> keys = Memoire.keys();
 		     while (keys.hasMoreElements()) {
@@ -119,7 +100,7 @@ public class Adresse {
 		        System.out.println(s + def);
 		     }
 	   }
-	   
+	   //retourne le haut de la pile de déclaration
 	   public int getOffset() {
 		   return offset;
 	   }
