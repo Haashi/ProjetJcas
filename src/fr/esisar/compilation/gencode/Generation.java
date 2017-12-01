@@ -24,6 +24,13 @@ class Generation {
       //Saving space for the variable in stack, and keeping their offset to know where each variable need to be save in the stack
       parcoursDecl(a.getFils1(),addrStack);
       //Instruction to move the StackPointer, depends on the number of variable
+      if(addrStack.getOffset() < 0)
+      { //Debordement d'entier
+    	 throw new RuntimeException("Erreur Interne adresse.offset < 0, le compilateur ne peut pas gérer autant d'allocations de place en pile");
+      }
+      
+      Prog.ajouter(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(addrStack.getOffset())));
+      Prog.ajouter(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
       Prog.ajouter(Inst.creation1(Operation.ADDSP, Operande.creationOpEntier(addrStack.getOffset())));
       //Reading all instructions and generate code.
       parcoursListeInst(a.getFils2(), Prog.instance(), addrStack,gestRegistre);
@@ -103,7 +110,14 @@ class Generation {
 				case Array:
 					Registre t4 = gestRegistre.getRegistre();
 					Etiq e1 = Etiq.nouvelle("etiq"), e2 = Etiq.nouvelle("etiq");
-					t3 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre,true);
+					boolean convertir=false;
+					if(a.getFils2().getNoeud()==Noeud.Conversion){
+						t3 = parcoursExp(a.getFils2().getFils1(),prog,addrStack,gestRegistre,true);
+						convertir=true;
+					}
+					else{
+						t3 = parcoursExp(a.getFils2(),prog,addrStack,gestRegistre,true);
+					}
 					t2 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre,true);
 					int taille = parcoursTaille(a.getDecor().getType());
 					t1=gestRegistre.getRegistre();
@@ -113,6 +127,7 @@ class Generation {
 					Prog.ajouter(Inst.creation2(Operation.CMP,Operande.creationOpEntier(taille),Operande.opDirect(t4)));
 					Prog.ajouter(Inst.creation1(Operation.BGT, Operande.creationOpEtiq(e2)));
 					Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpIndexe(0, Registre.GB, t3), Operande.opDirect(t1)));
+					if(convertir)Prog.ajouter(Inst.creation2(Operation.FLOAT, Operande.opDirect(t1), Operande.opDirect(t1)));	
 					Prog.ajouter(Inst.creation2(Operation.STORE, Operande.opDirect(t1),Operande.creationOpIndexe(0, Registre.GB, t2)));
 					Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t3)));
 					Prog.ajouter(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(t2)));
@@ -316,7 +331,9 @@ class Generation {
 		   		if(t1==null){
 		   			if(!table) {
 		   				Prog.ajouter(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
-			   			Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpIndexe(0, Registre.GB, Registre.R14),Operande.opDirect(Registre.R14)));;
+			   			Prog.ajouter(Inst.creation2(Operation.LOAD, Operande.creationOpIndexe(0, Registre.GB, Registre.R14),Operande.opDirect(Registre.R14)));
+				   	    Prog.ajouter(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+				   	    Prog.ajouter(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   			Prog.ajouter(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 		   			}
 		   			return null;
@@ -360,6 +377,8 @@ class Generation {
 	   				Prog.ajouter(Inst.creation2(Operation.SUB, Operande.creationOpEntier(inf), Operande.opDirect(Registre.R15)));
 		   			Prog.ajouter(Inst.creation2(Operation.MUL, Operande.creationOpEntier(mul), Operande.opDirect(Registre.R15)));
 			   		Prog.ajouter(Inst.creation2(Operation.ADD, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
+			   		Prog.ajouter(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    Prog.ajouter(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		Prog.ajouter(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 	   			}
 	   			else if(t1==null){
@@ -420,7 +439,9 @@ class Generation {
 		if(ident.equals("true")) {
 			if(R==null){
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(Registre.R14)));
-				inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
+				inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+		   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
+	   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			}
 			else{
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(R)));
@@ -430,6 +451,8 @@ class Generation {
 		else if(ident.equals("false")) {
 			if(R==null){
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(0),Operande.opDirect(Registre.R14)));
+				inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+		   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 				inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			}
 			else{
@@ -439,6 +462,8 @@ class Generation {
 		else if(ident.equals("max_int")){
 			if(R==null){
 				inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(java.lang.Integer.MAX_VALUE),Operande.opDirect(Registre.R14)));
+				inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+		   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));				
 				inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			}
 			else{
@@ -451,6 +476,8 @@ class Generation {
 			if(!table) {
 				if(R==null){
 					inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpIndirect(offset, Registre.GB),Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 					inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 				}
 				else{
@@ -460,6 +487,8 @@ class Generation {
 			else {
 				if(R==null){
 					inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(offset),Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 					inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 				}
 				else{
@@ -528,6 +557,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.ADD, Operande.opDirect(Registre.R14), Operande.opDirect(Registre.R15)));
 		   			inst.add(Inst.creation1(Operation.BOV,Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Arith)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R15)));
 		   			ajouterInst(inst, prog);
 			   		return null;
@@ -561,6 +592,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.SUB, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation1(Operation.BOV,Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Arith)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 		   			ajouterInst(inst, prog);
 			   		return null;
@@ -569,8 +602,7 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.SUB, Operande.opDirect(Registre.R14), Operande.opDirect(t1)));
 		   			inst.add(Inst.creation1(Operation.BOV,Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Arith)));
-		   			//inst.add(Inst.creation2(Operation.LOAD, Operande.opDirect(Registre.R14), Operande.opDirect(t1)));
-		   			ajouterInst(inst, prog);
+		  			ajouterInst(inst, prog);
 			   		return t1;
 		   		}
 		   		else if(t1==null){
@@ -599,7 +631,10 @@ class Generation {
 			   		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(Registre.R15)));
 			   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15),Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SEQ, Operande.opDirect(Registre.R14)));
-		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
+			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
+		   			
 		   			ajouterInst(inst, prog);
 			   		return null;
 		   		}
@@ -642,6 +677,8 @@ class Generation {
 			   		inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(1),Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R14),Operande.opDirect(Registre.R15)));
 			   		inst.add(Inst.creation1(Operation.SGE, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst,prog);
 			   		return null;
@@ -682,6 +719,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SEQ, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -715,6 +754,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SNE, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -748,6 +789,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SLE, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -781,6 +824,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SLT, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -814,6 +859,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SGE, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -847,6 +894,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation1(Operation.SGT, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -881,7 +930,9 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.creationOpReel(0), Operande.opDirect(Registre.R15)));
 			   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
-			   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));	
+			   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -920,7 +971,9 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.creationOpReel(0), Operande.opDirect(Registre.R15)));
 			   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
-			   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));	
+			   		inst.add(Inst.creation2(Operation.DIV, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -958,6 +1011,8 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.MUL, Operande.opDirect(Registre.R14), Operande.opDirect(Registre.R15)));
 		   			inst.add(Inst.creation1(Operation.BOV,Operande.creationOpEtiq(Prog.L_Etiq_Debordement_Arith)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R15)));
 		   			ajouterInst(inst, prog);
 			   		return null;
@@ -994,7 +1049,9 @@ class Generation {
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.CMP, Operande.creationOpReel(0), Operande.opDirect(Registre.R15)));
 			   		inst.add(Inst.creation1(Operation.BEQ, Operande.creationOpEtiq(Prog.L_Etiq_Div_0)));
-			   		inst.add(Inst.creation2(Operation.MOD, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));	
+			   		inst.add(Inst.creation2(Operation.MOD, Operande.opDirect(Registre.R15), Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -1063,6 +1120,8 @@ class Generation {
 		   			default:
 		   				break;
 		   			}
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
@@ -1119,7 +1178,9 @@ class Generation {
 		   			inst.add(Inst.creation2(Operation.MUL, Operande.creationOpEntier(-1),Operande.opDirect(Registre.R14)));
 		   			inst.add(Inst.creation2(Operation.ADD, Operande.creationOpEntier(1), Operande.opDirect(Registre.R14)));
 			   		inst.add(Inst.creation2(Operation.MOD, Operande.creationOpEntier(2), Operande.opDirect(Registre.R14)));
-		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
+			   		inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
 		   		}
@@ -1132,33 +1193,19 @@ class Generation {
 		   		
 		   	case Conversion:
 		   		t1 = parcoursExp(a.getFils1(),prog,addrStack,gestRegistre,table);
-		   		t2 = gestRegistre.getRegistre();
-		   		if(t1==null && t2==null){
+		   		if(t1==null){
 		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
-		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R15)));
-		   			inst.add(Inst.creation2(Operation.FLOAT,Operande.opDirect(Registre.R14),Operande.opDirect(Registre.R15)));
-		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R15)));
+		   			inst.add(Inst.creation2(Operation.FLOAT,Operande.opDirect(Registre.R14),Operande.opDirect(Registre.R14)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
+		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R14)));
 			   		ajouterInst(inst, prog);
 			   		return null;
-		   		}
-		   		else if(t1==null){
-		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
-		   			inst.add(Inst.creation2(Operation.FLOAT,Operande.opDirect(Registre.R14),Operande.opDirect(t2)));
-			   		ajouterInst(inst, prog);
-			   		return t2;
-		   		}
-		   		else if(t2==null){
-		   			inst.add(Inst.creation1(Operation.POP, Operande.opDirect(Registre.R14)));
-		   			inst.add(Inst.creation2(Operation.FLOAT,Operande.opDirect(t1),Operande.opDirect(Registre.R14)));
-		   			inst.add(Inst.creation2(Operation.LOAD,Operande.opDirect(Registre.R14),Operande.opDirect(t1)));
+		   		}	
+		   		else{
+			   		inst.add(Inst.creation2(Operation.FLOAT,Operande.opDirect(t1),Operande.opDirect(t1)));
 			   		ajouterInst(inst, prog);
 			   		return t1;
-		   		}
-		   		else{
-			   		inst.add(Inst.creation2(Operation.FLOAT,Operande.opDirect(t1),Operande.opDirect(t2)));
-			   		ajouterInst(inst, prog);
-			   		gestRegistre.freeRegistre(t1);
-			   		return t2;
 		   		}
 
 		   	case Ident:
@@ -1173,6 +1220,8 @@ class Generation {
 		   		int alpha = a.getEntier();
 		   		if(t1==null){
 		   			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpEntier(alpha), Operande.opDirect(Registre.R15)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R15)));
 		   			ajouterInst(inst,prog);
 		   		}
@@ -1186,6 +1235,8 @@ class Generation {
 		   		float beta = a.getReel();
 		   		if(t1==null){
 		   			inst.add(Inst.creation2(Operation.LOAD, Operande.creationOpReel(beta), Operande.opDirect(Registre.R15)));
+					inst.add(Inst.creation1(Operation.TSTO, Operande.creationOpEntier(1)));
+			   	    inst.add(Inst.creation1(Operation.BOV, Operande.creationOpEtiq(Prog.L_Etiq_Pile_Pleine)));
 		   			inst.add(Inst.creation1(Operation.PUSH, Operande.opDirect(Registre.R15)));
 		   			ajouterInst(inst,prog);
 		   		}

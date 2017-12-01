@@ -1,12 +1,16 @@
 program
-T : array [1..10] of integer;
-i,j,temp:integer;
+r : array[1..13] of real;
+i : array[1..13] of real;
+j : integer;
 begin
-i := 1;
-j := 2;
-while (i<10) and (j<8) do
-	write("Bob",i,"Coucou",j);
-	i := i + 1;
-	j := j + 1;
+for j := 1 to 13 do
+	i[j] := 1; 	
 end;
+write("coucou");
+r := i;
+write("Bob");
+for j := 1 to 13 do
+	write(r[j]); 	
+end;
+	
 end.  
