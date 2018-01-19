@@ -191,13 +191,21 @@ public class Verif {
 	   		break;
 	   	case Affect:
 	   		t1 = verifier_PLACE(a.getFils1());
+	   		
 	   		t2 = verifier_EXP(a.getFils2());
+	   		
+
 	   		ResultatAffectCompatible res = ReglesTypage.affectCompatible(t1,t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			Decor decor = new Decor(t1);
+	 	 	   decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+	 	 	   conv.setDecor(decor);
 	   			a.setFils2(conv);
+	   			
 	   		}
 	 	   Decor decor = new Decor(t1);
+	 	   decor.setInfoCode(( a.getFils2().getDecor().getInfoCode()));
 	 	   a.setDecor(decor);
 	   		break;
 	   	case Pour:
@@ -261,6 +269,7 @@ public class Verif {
 	   		t2=verifier_EXP(a.getFils2());
 	   		ResultatBinaireCompatible res = ReglesTypage.binaireCompatible(Noeud.Index, t1, t2,a.getNumLigne());
 	   		Decor decor = new Decor(res.getTypeRes());
+	   		
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   	case Ident:
@@ -276,7 +285,11 @@ public class Verif {
 	   if(def==null) {
 		   ErreurContext.ErreurIdentificateurNonDeclare.leverErreurContext(a.getChaine(), a.getNumLigne());
 	   }
+	   if(def.getGenre()==Genre.PredefBoolean || def.getGenre()==Genre.PredefInteger || def.getGenre()==Genre.PredefReal) {
+		   ErreurContext.ErreurAffectationInvalide.leverErreurContext(a.getChaine(), a.getNumLigne());
+	   }
 	   Decor decor = new Decor(def);
+	   decor.setInfoCode(1);
 	   a.setDecor(decor);
 	   return def.getType();
    }
@@ -296,14 +309,22 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.Plus, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	   a.setDecor(decor);
+		 	   
 	   		return res.getTypeRes();
 	   		
 	   	case Moins:
@@ -312,13 +333,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.Moins, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	   a.setDecor(decor);
 	   		return res.getTypeRes();
 	   	
@@ -327,6 +355,7 @@ public class Verif {
 	   		t2 = verifier_EXP(a.getFils2());
 	   		res = ReglesTypage.binaireCompatible(Noeud.Et, t1, t2,a.getNumLigne());
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -335,6 +364,7 @@ public class Verif {
 	   		t2 = verifier_EXP(a.getFils2());
 	   		res = ReglesTypage.binaireCompatible(Noeud.Ou, t1, t2,a.getNumLigne());
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -344,13 +374,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.Egal, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   	
@@ -360,13 +397,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.NonEgal, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -376,13 +420,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.InfEgal, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   	
@@ -392,13 +443,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.Inf, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -408,13 +466,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.SupEgal, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -424,13 +489,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.Sup, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -439,14 +511,22 @@ public class Verif {
 	   		t2 = verifier_EXP(a.getFils2());
 	   		res = ReglesTypage.binaireCompatible(Noeud.DivReel, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
+
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -455,6 +535,7 @@ public class Verif {
 	   		t2 = verifier_EXP(a.getFils2());
 	   		res = ReglesTypage.binaireCompatible(Noeud.Quotient, t1, t2,a.getNumLigne());
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   	
@@ -464,13 +545,20 @@ public class Verif {
 	   		res = ReglesTypage.binaireCompatible(Noeud.Mult, t1, t2,a.getNumLigne());
 	   		if(res.getConv2()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils2(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils2(conv);
 	   		}
 	   		if(res.getConv1()) {
 	   			Arbre conv = Arbre.creation1(Noeud.Conversion,a.getFils1(), a.getNumLigne());
+	   			decor = new Decor(t1);
+		 	 	decor.setInfoCode((conv.getFils1().getDecor().getInfoCode()));
+		 	 	conv.setDecor(decor);
 	   			a.setFils1(conv);
 	   		}
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -479,6 +567,7 @@ public class Verif {
 	   		t2 = verifier_EXP(a.getFils2());
 	   		res = ReglesTypage.binaireCompatible(Noeud.Reste, t1, t2,a.getNumLigne());
 	   		decor = new Decor(res.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode()+ a.getFils2().getDecor().getInfoCode() +1);
 		 	a.setDecor(decor);
 	   		return res.getTypeRes();
 	   		
@@ -490,6 +579,7 @@ public class Verif {
 	   		t1 = verifier_EXP(a.getFils1());
 	   		res1 = ReglesTypage.unaireCompatible(Noeud.MoinsUnaire,t1,a.getNumLigne());
 	   		decor = new Decor(res1.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode());
 		 	a.setDecor(decor);
 	   		return res1.getTypeRes();
 	   	
@@ -497,6 +587,7 @@ public class Verif {
 	   		t1 = verifier_EXP(a.getFils1());
 	   		res1 = ReglesTypage.unaireCompatible(Noeud.PlusUnaire,t1,a.getNumLigne());
 	   		decor = new Decor(res1.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode());
 		 	a.setDecor(decor);
 	   		return res1.getTypeRes();
 	   		
@@ -504,6 +595,7 @@ public class Verif {
 	   		t1 = verifier_EXP(a.getFils1());
 	   		res1 = ReglesTypage.unaireCompatible(Noeud.Non,t1,a.getNumLigne());
 	   		decor = new Decor(res1.getTypeRes());
+	   		decor.setInfoCode(a.getFils1().getDecor().getInfoCode());
 		 	a.setDecor(decor);
 	   		return res1.getTypeRes();
 	   
@@ -513,14 +605,17 @@ public class Verif {
 	   		
 	   	case Chaine:
 	   		decor = new Decor(Type.String);
+	   		decor.setInfoCode(1);
 		 	   a.setDecor(decor);
 	   		return Type.String;
 	   	case Entier:
 	   		decor = new Decor(Type.Integer);
+	   		decor.setInfoCode(1);
 		 	   a.setDecor(decor);
 	   		return Type.Integer;
 	   	case Reel:
 	   		decor = new Decor(Type.Real);
+	   		decor.setInfoCode(1);
 		 	   a.setDecor(decor);
 	   		return Type.Real;
 	   	default:

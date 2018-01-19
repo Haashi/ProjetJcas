@@ -1,5 +1,7 @@
 program
+pi,a,b:real;
+i,j:integer;
 begin
-   null;
+a:= 1.0;
+write("Nombre de coefficient",a,"Comme");
 end.
-

@@ -2,7 +2,6 @@ package fr.esisar.compilation.global.src;
 
 import java.util.Hashtable;
 import java.util.Enumeration;
-import java.util.Iterator;
 
 /** 
  * Un environnement qui permet d'associer des Defn à des chaînes de caractères.

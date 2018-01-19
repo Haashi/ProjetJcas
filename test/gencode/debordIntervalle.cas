@@ -1,0 +1,8 @@
+program
+	i:integer;
+	j:1..13;
+	begin
+	 i:=15;
+   j := i;
+   write(j);
+end.

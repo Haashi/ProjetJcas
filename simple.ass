@@ -1,0 +1,257 @@
+; ----------------------------------------------------------------------
+; -----------                      Programme généré par JCasc-----------
+; ----------------------------------------------------------------------
+   TSTO #34 
+   BOV etiq_pile_pleine 
+   ADDSP #34 
+   LOAD #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 33(GB) 
+etiq.1: 
+   LOAD 33(GB), R0 
+   LOAD #2, R1 
+   CMP R1, R0 
+   BGT etiq.2 
+   LOAD #2, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 34(GB) 
+etiq.3: 
+   LOAD 34(GB), R0 
+   LOAD #5, R1 
+   CMP R1, R0 
+   BGT etiq.4 
+   LOAD #5, R0 
+   LOAD #25, R1 
+   LOAD 33(GB), R2 
+   LOAD #1, R3 
+   CMP R3, R2 
+   BLT etiq_debordement_indice 
+   LOAD #2, R3 
+   CMP R3, R2 
+   BGT etiq_debordement_indice 
+   SUB #1, R2 
+   MUL #4, R2 
+   ADD R2, R1 
+   LOAD 34(GB), R2 
+   LOAD #2, R3 
+   CMP R3, R2 
+   BLT etiq_debordement_indice 
+   LOAD #5, R3 
+   CMP R3, R2 
+   BGT etiq_debordement_indice 
+   SUB #2, R2 
+   MUL #1, R2 
+   ADD R2, R1 
+   LOAD #-2147483647, R2 
+   CMP R2, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R2 
+   CMP R2, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 0(GB, R1) 
+   LOAD #25, R0 
+   LOAD 33(GB), R1 
+   LOAD #1, R2 
+   CMP R2, R1 
+   BLT etiq_debordement_indice 
+   LOAD #2, R2 
+   CMP R2, R1 
+   BGT etiq_debordement_indice 
+   SUB #1, R1 
+   MUL #4, R1 
+   ADD R1, R0 
+   LOAD 34(GB), R1 
+   LOAD #2, R2 
+   CMP R2, R1 
+   BLT etiq_debordement_indice 
+   LOAD #5, R2 
+   CMP R2, R1 
+   BGT etiq_debordement_indice 
+   SUB #2, R1 
+   MUL #1, R1 
+   ADD R1, R0 
+   LOAD 0(GB, R0), R0 
+   LOAD R0, R1 
+   WINT 
+   WNL 
+   LOAD 34(GB), R0 
+   ADD #1, R0 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 34(GB) 
+   BRA etiq.3 
+etiq.4: 
+   LOAD 34(GB), R0 
+   SUB #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 34(GB) 
+   LOAD 33(GB), R0 
+   ADD #1, R0 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 33(GB) 
+   BRA etiq.1 
+etiq.2: 
+   LOAD 33(GB), R0 
+   SUB #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 33(GB) 
+   LOAD #25, R0 
+   LOAD #2, R1 
+   LOAD #1, R2 
+   CMP R2, R1 
+   BLT etiq_debordement_indice 
+   LOAD #2, R2 
+   CMP R2, R1 
+   BGT etiq_debordement_indice 
+   SUB #1, R1 
+   MUL #4, R1 
+   ADD R1, R0 
+   LOAD #1, R1 
+   LOAD #3, R2 
+   LOAD #1, R3 
+   CMP R3, R2 
+   BLT etiq_debordement_indice 
+   LOAD #3, R3 
+   CMP R3, R2 
+   BGT etiq_debordement_indice 
+   SUB #1, R2 
+   MUL #8, R2 
+   ADD R2, R1 
+   LOAD #1, R2 
+   LOAD #1, R3 
+   CMP R3, R2 
+   BLT etiq_debordement_indice 
+   LOAD #2, R3 
+   CMP R3, R2 
+   BGT etiq_debordement_indice 
+   SUB #1, R2 
+   MUL #4, R2 
+   ADD R2, R1 
+   LOAD #0, R3 
+etiq.5: 
+   CMP #4, R3 
+   BGE etiq.6 
+   LOAD 0(GB, R0), R2 
+   STORE R2, 0(GB, R1) 
+   ADD #1, R0 
+   ADD #1, R1 
+   ADD #1, R3 
+   BRA etiq.5 
+etiq.6: 
+   WSTR "allo2" 
+   LOAD #2, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 34(GB) 
+etiq.7: 
+   LOAD 34(GB), R0 
+   LOAD #5, R1 
+   CMP R1, R0 
+   BGT etiq.8 
+   LOAD #1, R0 
+   LOAD #3, R1 
+   LOAD #1, R2 
+   CMP R2, R1 
+   BLT etiq_debordement_indice 
+   LOAD #3, R2 
+   CMP R2, R1 
+   BGT etiq_debordement_indice 
+   SUB #1, R1 
+   MUL #8, R1 
+   ADD R1, R0 
+   LOAD #1, R1 
+   LOAD #1, R2 
+   CMP R2, R1 
+   BLT etiq_debordement_indice 
+   LOAD #2, R2 
+   CMP R2, R1 
+   BGT etiq_debordement_indice 
+   SUB #1, R1 
+   MUL #4, R1 
+   ADD R1, R0 
+   LOAD 34(GB), R1 
+   LOAD #2, R2 
+   CMP R2, R1 
+   BLT etiq_debordement_indice 
+   LOAD #5, R2 
+   CMP R2, R1 
+   BGT etiq_debordement_indice 
+   SUB #2, R1 
+   MUL #1, R1 
+   ADD R1, R0 
+   LOAD 0(GB, R0), R0 
+   LOAD R0, R1 
+   WINT 
+   WNL 
+   LOAD 34(GB), R0 
+   ADD #1, R0 
+   BOV etiq_debordement_arith 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 34(GB) 
+   BRA etiq.7 
+etiq.8: 
+   LOAD 34(GB), R0 
+   SUB #1, R0 
+   LOAD #-2147483647, R1 
+   CMP R1, R0 
+   BLT etiq_debordement_intervalle 
+   LOAD #2147483647, R1 
+   CMP R1, R0 
+   BGT etiq_debordement_intervalle 
+   STORE R0, 34(GB) 
+   HALT 
+etiq_debordement_intervalle: 
+   WSTR "Debordement intervalle" 
+   HALT 
+etiq_debordement_indice: 
+   WSTR "Segmentation Fault" 
+   HALT 
+etiq_debordement_arith: 
+   WSTR "BufferOverflow" 
+   HALT 
+etiq_pile_pleine: 
+   WSTR "StackOverflow" 
+   HALT 
+division_par_0: 
+   WSTR "Division par 0" 
+   HALT 

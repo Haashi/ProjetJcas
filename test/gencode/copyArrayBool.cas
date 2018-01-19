@@ -1,0 +1,9 @@
+program 
+b,c : array [1..13] of boolean;
+i :integer;
+begin
+for i:= 1 to 13 do
+	b[i] := true;
+end;
+c := b;
+end.

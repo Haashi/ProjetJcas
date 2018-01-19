@@ -1,0 +1,37 @@
+program
+	i,b:integer;
+	r:real;
+	j:1..13;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
+begin
+	i:=1;
+	j:=1;
+	ai[1]:=1;
+	aj[1]:=1;
+	b:= +i;
+	write(b);
+	new_line;
+	b:= +j;
+	write(b);
+	new_line;
+	b:= +ai[1];
+	write(b);
+	new_line;
+	b:= +aj[1];
+	write(b);
+	new_line;
+	b:= -i;
+	write(b);
+	new_line;
+	b:= -j;
+	write(b);
+	new_line;
+	b:= -ai[1];
+	write(b);
+	new_line;
+	b:= -aj[1];
+	write(b);
+	new_line;
+end.

@@ -1,4 +1,15 @@
 program
+	i:integer;
+	r,d:real;
+	j:1..13;
+	ai:Array [1..5] of integer;
+	ar:Array [1..5] of real;
+	aj:Array [1..5] of 1..13;
 begin
-   null;
+	ai[1]:=2;
+	aj[1]:=4;
+	i:=4;
+	j:=3;
+	r:=2;
+   d := ai[1] / i;
 end.

@@ -1,0 +1,26 @@
+program
+T : array [1..10] of integer;
+i,j,temp:integer;
+begin
+for i:=1 to 10 do 
+	read(T[i]);
+end;
+
+for i:= 10 downto 2 do 
+	for j:= 1 to i-1 do
+		if T[j+1] < T[j] then
+			temp := T[j];
+			T[j] := T[j+1];
+			T[j+1] := temp;
+		end;
+	end;
+end;
+write ("[");
+for i:= 1 to 10 do 
+	write(T[i]);
+	if i<10 then
+		write(",");
+	end;
+end;
+write("]");
+end.  
